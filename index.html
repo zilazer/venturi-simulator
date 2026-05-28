@@ -3520,17 +3520,21 @@ ${formulaMarkdown(pageFormulas.deep)}
       update();
     }
 
+    function firstDefined(...values) {
+      return values.find((value) => value !== undefined && value !== null);
+    }
+
     function fillManualFromResult(result, flowSource = state.values) {
       if (!result) return;
       state.manualValues = {
         ...state.manualValues,
-        waterFlowLpm: flowSource.waterFlowLpm || result.targetWater || state.manualValues.waterFlowLpm,
-        airFlowLpm: flowSource.airFlowLpm || result.targetAir || result.airFlowLpm,
-        inletGaugeKpa: result.inletGaugeKpa || flowSource.inletGaugeKpa || state.manualValues.inletGaugeKpa,
-        backGaugeKpa: flowSource.backGaugeKpa || result.targetBack || state.manualValues.backGaugeKpa,
-        atmKpa: flowSource.atmKpa || state.values.atmKpa,
-        waterTempC: flowSource.waterTempC || state.values.waterTempC,
-        airTempC: flowSource.airTempC || state.values.airTempC,
+        waterFlowLpm: firstDefined(flowSource.waterFlowLpm, result.targetWater, state.manualValues.waterFlowLpm),
+        airFlowLpm: firstDefined(flowSource.airFlowLpm, result.targetAir, result.airFlowLpm),
+        inletGaugeKpa: firstDefined(result.inletGaugeKpa, flowSource.inletGaugeKpa, state.manualValues.inletGaugeKpa),
+        backGaugeKpa: firstDefined(flowSource.backGaugeKpa, result.targetBack, state.manualValues.backGaugeKpa),
+        atmKpa: firstDefined(flowSource.atmKpa, state.values.atmKpa),
+        waterTempC: firstDefined(flowSource.waterTempC, state.values.waterTempC),
+        airTempC: firstDefined(flowSource.airTempC, state.values.airTempC),
         inletMm: result.inletMm,
         throatMm: result.throatMm,
         outletMm: result.outletMm,
@@ -3538,8 +3542,8 @@ ${formulaMarkdown(pageFormulas.deep)}
         diffuserDeg: result.diffuserDeg,
         throatLengthMm: result.throatLengthMm,
         airPortMm: result.airPortMm,
-        airPortOffsetMm: result.airPortOffsetMm || flowSource.airPortOffsetMm || 0,
-        roughnessUm: flowSource.roughnessUm || state.values.roughnessUm
+        airPortOffsetMm: firstDefined(result.airPortOffsetMm, flowSource.airPortOffsetMm, 0),
+        roughnessUm: firstDefined(flowSource.roughnessUm, state.values.roughnessUm)
       };
       refreshManualFieldDisplays();
       updateManual();
