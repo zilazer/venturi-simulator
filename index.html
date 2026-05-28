@@ -1,0 +1,3727 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>文丘里管水气混合工程初选</title>
+  <link rel="icon" href="data:,">
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f7f5ee;
+      --panel: #fffdf7;
+      --panel-2: #eee9df;
+      --ink: #171717;
+      --muted: #5f5b53;
+      --muted-weak: #8a857a;
+      --line: #d8d2c4;
+      --line-strong: #bdb6a8;
+      --accent: #111111;
+      --accent-active: #3a3a36;
+      --accent-disabled: #d6d0c4;
+      --accent-2: #1f1f1f;
+      --warn: #8a5a00;
+      --danger: #a72f2f;
+      --soft-blue: rgba(17, 17, 17, 0.08);
+      --soft-green: rgba(17, 17, 17, 0.07);
+      --soft-warn: rgba(138, 90, 0, 0.12);
+      --soft-danger: rgba(167, 47, 47, 0.12);
+      --shadow: none;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Geist", Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background:
+        linear-gradient(rgba(23, 23, 23, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(23, 23, 23, 0.035) 1px, transparent 1px),
+        var(--bg);
+      background-size: 24px 24px;
+      color: var(--ink);
+      letter-spacing: 0;
+    }
+
+    header {
+      padding: 22px 28px 14px;
+      background: rgba(247, 245, 238, 0.88);
+      border-bottom: 1px solid var(--line);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(12px);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(22px, 3vw, 34px);
+      font-weight: 700;
+      letter-spacing: -0.4px;
+      color: var(--ink);
+    }
+
+    .subtitle {
+      margin: 8px 0 0;
+      color: var(--muted);
+      line-height: 1.55;
+      max-width: 980px;
+      font-size: 14px;
+    }
+
+    .page-tabs {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+
+    .page-tabs button {
+      min-height: 36px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 0 14px;
+      background: var(--panel);
+      color: var(--muted);
+      cursor: pointer;
+      font: inherit;
+      font-weight: 750;
+    }
+
+    .page-tabs button.active {
+      border-color: var(--accent);
+      background: var(--soft-blue);
+      color: var(--accent);
+    }
+
+    .model-toggle {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin: 8px 0 12px;
+      padding: 4px;
+      background: #f2eee5;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+    }
+
+    .model-toggle button {
+      min-height: 34px;
+      border: 0;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .model-toggle button.active {
+      background: var(--panel);
+      color: var(--accent);
+      box-shadow: none;
+    }
+
+    .model-description {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+      padding: 9px 10px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #f2eee5;
+      margin-bottom: 12px;
+    }
+
+    .custom-model-fields {
+      display: none;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .custom-model-fields.active {
+      display: grid;
+    }
+
+    .custom-model-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .global-units {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .global-units .unit-toggle {
+      width: min(360px, 100%);
+      grid-template-columns: repeat(3, 1fr);
+      margin: 0;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: minmax(320px, 390px) minmax(0, 1fr);
+      gap: 18px;
+      padding: 18px;
+      max-width: 1540px;
+      margin: 0 auto;
+    }
+
+    main.hidden {
+      display: none;
+    }
+
+    .single-page {
+      grid-template-columns: minmax(320px, 430px) minmax(0, 1fr);
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      min-width: 0;
+    }
+
+    .controls {
+      padding: 16px;
+      align-self: start;
+      position: sticky;
+      top: 12px;
+      max-height: calc(100vh - 24px);
+      overflow: auto;
+    }
+
+    .workbench {
+      display: grid;
+      gap: 18px;
+      min-width: 0;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 16px 0 10px;
+      font-size: 15px;
+      font-weight: 750;
+    }
+
+    .section-title:first-child {
+      margin-top: 0;
+    }
+
+    .field {
+      display: grid;
+      grid-template-columns: 1fr 88px;
+      gap: 10px;
+      align-items: center;
+      padding: 9px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .field:last-child {
+      border-bottom: 0;
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .label-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    .unit {
+      color: var(--muted);
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+    }
+
+    input[type="number"] {
+      width: 88px;
+      height: 34px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 0 8px;
+      font: inherit;
+      color: var(--ink);
+      background: #f2eee5;
+    }
+
+    input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
+    }
+
+    .mode-toggle {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin: 8px 0 4px;
+      padding: 4px;
+      background: #f2eee5;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+    }
+
+    .mode-toggle button,
+    .primary-button {
+      min-height: 38px;
+      border: 0;
+      border-radius: 6px;
+      cursor: pointer;
+      font: inherit;
+      font-weight: 700;
+    }
+
+    .mode-toggle button {
+      color: var(--muted);
+      background: transparent;
+    }
+
+    .mode-toggle button.active {
+      background: var(--panel);
+      color: var(--accent);
+      box-shadow: none;
+    }
+
+    .unit-toggle {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin: 8px 0 2px;
+      padding: 4px;
+      background: #f2eee5;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+    }
+
+    .unit-toggle button {
+      min-height: 32px;
+      border: 0;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .unit-toggle button.active {
+      background: var(--panel);
+      color: var(--accent);
+      box-shadow: none;
+    }
+
+    .primary-button {
+      width: 100%;
+      margin-top: 14px;
+      background: var(--accent);
+      color: #ffffff;
+      border-radius: 6px;
+    }
+
+    .primary-button:hover,
+    .page-tabs button.active:hover,
+    .model-toggle button.active:hover,
+    .unit-toggle button.active:hover {
+      background: var(--accent-active);
+      color: #ffffff;
+    }
+
+    .secondary-button:hover,
+    .page-tabs button:hover,
+    .mode-toggle button:hover,
+    .unit-toggle button:hover,
+    .model-toggle button:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .hint {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .status-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .status-card {
+      position: relative;
+      min-height: 82px;
+      border-radius: 8px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+    }
+
+    .status-card[data-tooltip] {
+      cursor: help;
+    }
+
+    .status-card[data-tooltip]::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      bottom: calc(100% + 8px);
+      z-index: 30;
+      display: block;
+      padding: 9px 10px;
+      border: 1px solid var(--line-strong);
+      border-radius: 6px;
+      background: #111111;
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1.45;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(4px);
+      transition: opacity 120ms ease, transform 120ms ease;
+      box-shadow: 0 10px 30px rgba(17, 17, 17, 0.18);
+    }
+
+    .status-card[data-tooltip]:hover::after,
+    .status-card[data-tooltip]:focus-within::after {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .status-card.good {
+      border-color: rgba(14, 203, 129, 0.35);
+      background: var(--soft-green);
+    }
+
+    .status-card.warn {
+      border-color: rgba(252, 213, 53, 0.35);
+      background: var(--soft-warn);
+    }
+
+    .status-card.bad {
+      border-color: rgba(246, 70, 93, 0.35);
+      background: var(--soft-danger);
+    }
+
+    .status-label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 650;
+    }
+
+    .status-value {
+      margin-top: 7px;
+      font-size: 18px;
+      font-weight: 800;
+      line-height: 1.15;
+      overflow-wrap: anywhere;
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    .grid-two {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .output-panel {
+      padding: 16px;
+      min-width: 0;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 9px;
+    }
+
+    .metric {
+      min-height: 70px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      background: #f2eee5;
+    }
+
+    .metric-name {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 650;
+    }
+
+    .metric-value {
+      margin-top: 6px;
+      font-size: 18px;
+      font-weight: 800;
+      overflow-wrap: anywhere;
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    .metric.has-advice {
+      border-color: var(--line-strong);
+    }
+
+    .advice-stack {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 8px;
+    }
+
+    .advice-arrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      min-height: 22px;
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 12px;
+      font-weight: 800;
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      border: 1px solid currentColor;
+      background: rgba(17, 17, 17, 0.04);
+    }
+
+    .advice-suction { color: #a72f2f; }
+    .advice-back { color: #8a5a00; }
+    .advice-cavitation { color: #404040; }
+    .advice-gas { color: #111111; }
+
+    .label-row .advice-stack {
+      margin-top: 0;
+      justify-content: flex-end;
+    }
+
+    .canvas-panel {
+      padding: 16px;
+      min-width: 0;
+    }
+
+    .canvas-wrap {
+      position: relative;
+      width: 100%;
+      min-height: 280px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8f6ef;
+      overflow: hidden;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 280px;
+    }
+
+    #pipeCanvas,
+    #targetPipeCanvas,
+    #manualPipeCanvas {
+      height: 340px;
+    }
+
+    .risk-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .risk {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      padding: 9px 10px;
+      border-radius: 7px;
+      border: 1px solid var(--line);
+      font-size: 13px;
+      line-height: 1.45;
+      background: #f2eee5;
+    }
+
+    .risk::before {
+      content: "";
+      width: 9px;
+      height: 9px;
+      margin-top: 5px;
+      border-radius: 50%;
+      flex: 0 0 auto;
+      background: var(--accent-2);
+    }
+
+    .risk.warn::before {
+      background: var(--warn);
+    }
+
+    .risk.bad::before {
+      background: var(--danger);
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .swatch {
+      width: 22px;
+      height: 8px;
+      border-radius: 999px;
+      display: inline-block;
+    }
+
+    .footer-note {
+      padding: 12px 18px 24px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.55;
+      max-width: 1540px;
+      margin: 0 auto;
+    }
+
+    .target-form {
+      display: grid;
+      gap: 12px;
+    }
+
+    .target-field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .target-field input {
+      width: 100%;
+      height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 0 10px;
+      font: inherit;
+      background: #f2eee5;
+      color: var(--ink);
+    }
+
+    .checkbox-field {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 38px;
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #f2eee5;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    .solution-hero {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .solution-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .secondary-button {
+      min-height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--panel);
+      color: var(--ink);
+      cursor: pointer;
+      font: inherit;
+      font-weight: 750;
+      padding: 0 14px;
+    }
+
+    .data-table-wrap {
+      width: 100%;
+      max-width: 100%;
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f2eee5;
+    }
+
+    .data-table {
+      width: 100%;
+      min-width: 820px;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    .data-table th,
+    .data-table td {
+      padding: 9px 10px;
+      border-bottom: 1px solid var(--line);
+      text-align: right;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .data-table th:first-child,
+    .data-table td:first-child,
+    .data-table th:nth-child(2),
+    .data-table td:nth-child(2) {
+      text-align: left;
+    }
+
+    .data-table th {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background: var(--panel-2);
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .data-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .formula-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .formula {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #f2eee5;
+    }
+
+    .formula-name {
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .formula-expr {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      color: var(--accent);
+      background: var(--soft-blue);
+      border-radius: 6px;
+      padding: 8px;
+      overflow-wrap: anywhere;
+      line-height: 1.45;
+    }
+
+    .formula-desc {
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .mantra-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .mantra-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      background: var(--panel);
+    }
+
+    .mantra-card h3 {
+      margin: 0 0 10px;
+      font-size: 15px;
+      letter-spacing: 0;
+    }
+
+    .mantra-card p {
+      margin: 0;
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1.7;
+      white-space: pre-line;
+    }
+
+    .mantra-feature {
+      border: 1px solid var(--accent);
+      background: var(--soft-blue);
+    }
+
+    .mantra-feature p {
+      font-size: 18px;
+      font-weight: 800;
+      line-height: 1.75;
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    @media (max-width: 1120px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+
+      .single-page {
+        grid-template-columns: 1fr;
+      }
+
+      .controls {
+        position: static;
+        max-height: none;
+      }
+    }
+
+    @media (max-width: 760px) {
+      header {
+        padding: 18px 16px 10px;
+      }
+
+      main {
+        padding: 12px;
+      }
+
+      .status-strip,
+      .grid-two,
+      .metrics,
+      .solution-hero,
+      .mantra-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .field {
+        grid-template-columns: 1fr 82px;
+      }
+
+      input[type="number"] {
+        width: 82px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>文丘里管水气混合工程初选</h1>
+    <p class="subtitle">用于小型水气混合方案的趋势计算与结构初选。模型基于伯努利、连续方程、局部损失和简化空气进气估算，不替代实验标定、CFD 或正式安全设计。</p>
+    <nav class="page-tabs" aria-label="页面切换">
+      <button id="showSimPage" class="active" type="button">仿真页</button>
+      <button id="showTargetPage" type="button">目标反算页</button>
+      <button id="showManualPage" type="button">手动校核页</button>
+      <button id="showDeepPage" type="button">深度计算页</button>
+      <button id="showMantraPage" type="button">工程口诀</button>
+    </nav>
+    <div class="global-units">
+      <span>压力单位</span>
+      <div class="unit-toggle" aria-label="压力单位切换">
+        <button id="pressureUnitKpa" class="active" type="button">kPa</button>
+        <button id="pressureUnitMpa" type="button">MPa</button>
+        <button id="pressureUnitKg" type="button">公斤压力</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="simPage" class="page">
+    <aside class="panel controls">
+      <div class="section-title">应用模型</div>
+      <div class="model-toggle" data-model-toggle></div>
+      <div class="model-description" data-model-description></div>
+      <div class="custom-model-fields" data-custom-model-fields></div>
+
+      <div class="section-title">轴向水入口</div>
+      <div id="waterFields"></div>
+
+      <div class="section-title">径向空气入口</div>
+      <div class="mode-toggle" aria-label="空气输入模式">
+        <button id="modeFlow" class="active" type="button">目标进气量</button>
+        <button id="modeDiameter" type="button">空气孔径</button>
+      </div>
+      <div id="airFlowField"></div>
+      <div class="unit-toggle" id="airUnitToggle" aria-label="目标进气量单位">
+        <button id="airUnitLpm" class="active" type="button">L/min</button>
+        <button id="airUnitMlpm" type="button">mL/min</button>
+      </div>
+      <div id="airDiameterField" hidden></div>
+      <div id="airPositionField"></div>
+
+      <div class="section-title">环境与出口</div>
+      <div id="environmentFields"></div>
+
+      <div class="section-title">设计约束</div>
+      <div id="constraintFields"></div>
+
+      <button class="primary-button" id="autoDesign" type="button">自动设计并刷新</button>
+      <button class="secondary-button" id="copySimToManual" type="button">复制到手动校核页</button>
+      <button class="secondary-button" id="downloadSimStep" type="button">一键生成 STP 文件</button>
+      <button class="secondary-button" id="downloadSimMarkdown" type="button">导出计算步骤 MD</button>
+      <p class="hint">压力输入按表压理解，内部计算会换算为绝压。大气压、空气温度和水温会影响密度、吸气能力和空化判断。</p>
+    </aside>
+
+    <section class="workbench">
+      <div class="status-strip" id="statusStrip"></div>
+
+      <div class="grid-two">
+        <section class="panel output-panel">
+          <div class="section-title">推荐几何参数</div>
+          <div class="metrics" id="geometryMetrics"></div>
+        </section>
+        <section class="panel output-panel">
+          <div class="section-title">出口与混合数据</div>
+          <div class="metrics" id="flowMetrics"></div>
+        </section>
+      </div>
+
+      <section class="panel canvas-panel">
+        <div class="section-title">几何图示、管内剖面与沿程趋势</div>
+        <div class="canvas-wrap">
+          <canvas id="pipeCanvas"></canvas>
+        </div>
+        <div class="legend">
+          <span><i class="swatch" style="background:#2f80ed"></i>低压区</span>
+          <span><i class="swatch" style="background:#22a06b"></i>可吸气</span>
+          <span><i class="swatch" style="background:#d64545"></i>逆流/不可行</span>
+          <span><i class="swatch" style="background:#f59f00"></i>空化边界</span>
+        </div>
+      </section>
+
+      <section class="panel canvas-panel">
+        <div class="section-title">出口流体形态</div>
+        <div class="canvas-wrap">
+          <canvas id="jetCanvas"></canvas>
+        </div>
+      </section>
+
+      <section class="panel output-panel">
+        <div class="section-title">风险与建议</div>
+        <div class="risk-list" id="riskList"></div>
+      </section>
+
+      <section class="panel output-panel">
+        <div class="section-title">公式与说明</div>
+        <div class="formula-list" id="simFormulaList"></div>
+      </section>
+    </section>
+  </main>
+
+  <main id="targetPage" class="page single-page hidden">
+    <aside class="panel controls">
+      <div class="section-title">应用模型</div>
+      <div class="model-toggle" data-model-toggle></div>
+      <div class="model-description" data-model-description></div>
+      <div class="custom-model-fields" data-custom-model-fields></div>
+
+      <div class="section-title">目标输入</div>
+      <div class="target-form">
+        <label class="target-field">
+          <span class="label-row"><span>目标进水量</span><span class="unit">L/min</span></span>
+          <input id="targetWaterFlow" type="number" min="0.05" max="12" step="0.01" value="4">
+        </label>
+        <label class="target-field">
+          <span class="label-row"><span>目标进气量</span><span class="unit">L/min</span></span>
+          <input id="targetAirFlow" type="number" min="0.01" max="1.5" step="0.01" value="0.4">
+        </label>
+        <label class="target-field">
+          <span class="label-row"><span>期望进水口直径</span><span class="unit">mm</span></span>
+          <input id="targetInletDiameter" type="number" min="1" max="50" step="0.01" value="8">
+        </label>
+        <label class="target-field">
+          <span class="label-row"><span>出口背压</span><span class="unit" id="targetBackPressureUnit">kPa(g)</span></span>
+          <input id="targetBackPressure" type="number" min="0" max="750" step="5" value="50">
+        </label>
+        <label class="target-field">
+          <span class="label-row"><span>最高允许入口压力</span><span class="unit" id="targetMaxInletPressureUnit">kPa(g)</span></span>
+          <input id="targetMaxInletPressure" type="number" min="80" max="1500" step="5" value="650">
+        </label>
+        <label class="target-field">
+          <span class="label-row"><span>最大进气口直径</span><span class="unit">mm</span></span>
+          <input id="targetMaxAirPort" type="number" min="0.05" max="4.5" step="0.01" value="2">
+        </label>
+        <label class="target-field">
+          <span class="label-row"><span>进气口轴线位置</span><span class="unit">mm</span></span>
+          <input id="targetAirPortOffset" type="number" min="-20" max="30" step="0.01" value="0">
+        </label>
+      </div>
+      <button class="secondary-button" id="solveLowFlowExample" type="button">查找 3.5 mm / 0.6 L/min 示例</button>
+      <button class="primary-button" id="solveSuctionTarget" type="button">推算可进气状态</button>
+      <p class="hint">此页面会自动搜索入口压力、喉径和空气入口等效直径，目标是找到吸气状态为“可吸气”的方案。环境参数、最大外径、粗糙度默认沿用仿真页当前设置。</p>
+    </aside>
+
+    <section class="workbench">
+      <section class="panel output-panel">
+        <div class="section-title">目标反算结果</div>
+        <div class="solution-hero" id="solutionHero"></div>
+        <div class="metrics" id="targetSolutionMetrics"></div>
+        <div class="solution-actions">
+          <button class="secondary-button" id="applyTargetSolution" type="button" disabled>应用到仿真页</button>
+          <button class="secondary-button" id="viewTargetInSim" type="button" disabled>查看仿真图</button>
+          <button class="secondary-button" id="copyTargetToManual" type="button" disabled>复制到手动校核页</button>
+          <button class="secondary-button" id="downloadTargetStep" type="button" disabled>一键生成 STP 文件</button>
+          <button class="secondary-button" id="downloadTargetMarkdown" type="button" disabled>导出计算步骤 MD</button>
+        </div>
+      </section>
+
+      <section class="panel canvas-panel">
+        <div class="section-title">可进气方案几何图</div>
+        <div class="canvas-wrap">
+          <canvas id="targetPipeCanvas"></canvas>
+        </div>
+      </section>
+
+      <section class="panel output-panel">
+        <div class="section-title">搜索说明与风险</div>
+        <div class="risk-list" id="targetRiskList"></div>
+      </section>
+
+      <section class="panel output-panel">
+        <div class="section-title">公式与说明</div>
+        <div class="formula-list" id="targetFormulaList"></div>
+      </section>
+    </section>
+  </main>
+
+  <main id="manualPage" class="page single-page hidden">
+    <aside class="panel controls">
+      <div class="section-title">应用模型</div>
+      <div class="model-toggle" data-model-toggle></div>
+      <div class="model-description" data-model-description></div>
+      <div class="custom-model-fields" data-custom-model-fields></div>
+
+      <div class="section-title">手动输入</div>
+      <div class="target-form" id="manualFields"></div>
+      <div class="solution-actions">
+        <button class="secondary-button" id="fillManualFromSim" type="button">从仿真页填入</button>
+        <button class="secondary-button" id="fillManualFromTarget" type="button">从目标反算填入</button>
+      </div>
+      <button class="primary-button" id="runManualCheck" type="button">校核当前参数</button>
+      <button class="secondary-button" id="downloadManualStep" type="button">一键生成 STP 文件</button>
+      <button class="secondary-button" id="downloadManualMarkdown" type="button">导出计算步骤 MD</button>
+      <p class="hint">手动校核页不会自动修改几何参数。收缩半角和扩散半角按用户输入直接参与压损、压恢复和风险判断。</p>
+    </aside>
+
+    <section class="workbench">
+      <div class="status-strip" id="manualStatusStrip"></div>
+
+      <div class="grid-two">
+        <section class="panel output-panel">
+          <div class="section-title">手动几何参数</div>
+          <div class="metrics" id="manualGeometryMetrics"></div>
+        </section>
+        <section class="panel output-panel">
+          <div class="section-title">校核输出</div>
+          <div class="metrics" id="manualFlowMetrics"></div>
+        </section>
+      </div>
+
+      <section class="panel canvas-panel">
+        <div class="section-title">手动校核几何图</div>
+        <div class="canvas-wrap">
+          <canvas id="manualPipeCanvas"></canvas>
+        </div>
+      </section>
+
+      <section class="panel canvas-panel">
+        <div class="section-title">手动校核出口流态</div>
+        <div class="canvas-wrap">
+          <canvas id="manualJetCanvas"></canvas>
+        </div>
+      </section>
+
+      <section class="panel output-panel">
+        <div class="section-title">风险与建议</div>
+        <div class="risk-list" id="manualRiskList"></div>
+      </section>
+
+      <section class="panel output-panel">
+        <div class="section-title">公式与说明</div>
+        <div class="formula-list" id="manualFormulaList"></div>
+      </section>
+    </section>
+  </main>
+
+  <main id="deepPage" class="page single-page hidden">
+    <aside class="panel controls">
+      <div class="section-title">应用模型</div>
+      <div class="model-toggle" data-model-toggle></div>
+      <div class="model-description" data-model-description></div>
+      <div class="custom-model-fields" data-custom-model-fields></div>
+
+      <div class="section-title">深度计算参数</div>
+      <div class="target-form">
+        <label class="target-field">
+          <span class="label-row"><span>节点数</span><span class="unit">个</span></span>
+          <input id="deepNodeCount" type="number" min="8" max="96" step="1" value="24">
+        </label>
+        <label class="target-field">
+          <span class="label-row"><span>滑移比</span><span class="unit">v_air/v_water</span></span>
+          <input id="deepSlipRatio" type="number" min="0.2" max="5" step="0.05" value="1">
+        </label>
+        <label class="target-field">
+          <span class="label-row"><span>气泡平均直径</span><span class="unit">mm</span></span>
+          <input id="deepBubbleDiameter" type="number" min="0.05" max="12" step="0.05" value="1.5">
+        </label>
+        <label class="checkbox-field">
+          <span>空气膨胀修正</span>
+          <input id="deepUseAirExpansion" type="checkbox" checked>
+        </label>
+        <label class="checkbox-field">
+          <span>两相密度修正</span>
+          <input id="deepUseTwoPhaseDensity" type="checkbox" checked>
+        </label>
+      </div>
+      <div class="solution-actions">
+        <button class="secondary-button" id="fillDeepFromManual" type="button">从手动校核页填入</button>
+        <button class="secondary-button" id="fillDeepFromTarget" type="button">从目标反算填入</button>
+      </div>
+      <button class="primary-button" id="runDeepCalc" type="button">运行深度计算</button>
+      <button class="secondary-button" id="downloadDeepMarkdown" type="button">导出深度计算 MD</button>
+      <p class="hint">深度计算页使用当前手动几何做 1D 多节点校核，不自动改变入口直径、喉径、角度或孔径。节点越多，沿程曲线越细，但仍不是 CFD。</p>
+    </aside>
+
+    <section class="workbench">
+      <div class="status-strip" id="deepStatusStrip"></div>
+
+      <section class="panel output-panel">
+        <div class="section-title">深度计算摘要</div>
+        <div class="metrics" id="deepProfileMetrics"></div>
+      </section>
+
+      <section class="panel canvas-panel">
+        <div class="section-title">沿程曲线</div>
+        <div class="canvas-wrap">
+          <canvas id="deepCurveCanvas"></canvas>
+        </div>
+        <div class="legend">
+          <span><i class="swatch" style="background:#fcd535"></i>压力</span>
+          <span><i class="swatch" style="background:#0ecb81"></i>速度</span>
+          <span><i class="swatch" style="background:#f6465d"></i>含气率</span>
+        </div>
+      </section>
+
+      <section class="panel output-panel">
+        <div class="section-title">多节点沿程表</div>
+        <div class="data-table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>位置</th>
+                <th>段落</th>
+                <th>直径 mm</th>
+                <th>速度 m/s</th>
+                <th>水压</th>
+                <th>空气量 L/min</th>
+                <th>含气率 %</th>
+                <th>混合密度 kg/m3</th>
+                <th>空化裕度</th>
+              </tr>
+            </thead>
+            <tbody id="deepTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel output-panel">
+        <div class="section-title">深度风险列表</div>
+        <div class="risk-list" id="deepRiskList"></div>
+      </section>
+
+      <section class="panel output-panel">
+        <div class="section-title">公式与说明</div>
+        <div class="formula-list" id="deepFormulaList"></div>
+      </section>
+    </section>
+  </main>
+
+  <main id="mantraPage" class="page single-page hidden">
+    <aside class="panel controls">
+      <div class="section-title">文丘里 / 微纳米气泡工程口诀</div>
+      <p class="hint">这些口诀用于实验调参和方案复盘。它们不是公式，但能帮助判断优先改哪里：先稳流场，再调吸气，再看剪切和停留。</p>
+      <div class="risk-list">
+        <div class="risk good">调参顺序建议：先查气路阻力和背压，再改喉径、喉长、扩散段和进气位置。</div>
+        <div class="risk warn">微纳米气泡系统不要只追求吸气量，气泡稳定性、剪切强度和停留时间通常更关键。</div>
+      </div>
+    </aside>
+
+    <section class="workbench">
+      <section class="panel output-panel">
+        <div class="section-title">贴实验室墙上的版本</div>
+        <div class="mantra-card mantra-feature">
+          <p>喉径小一点，喉长长一点；
+收缩缓一点，扩散慢一点；
+气管短一点，气路粗一点；
+背压低一点，混合久一点；
+大泡靠吸，小泡靠剪；
+纳米泡，不只靠进气，还靠流场。</p>
+        </div>
+      </section>
+
+      <section class="mantra-grid">
+        <div class="mantra-card">
+          <h3>一、基础流动规律</h3>
+          <p>喉径小一点，流速高一点；负压强一点，吸气多一点。
+
+收缩缓一点，损失少一点；扩散慢一点，回流少一点。
+
+气管短一点，吸气猛一点；气路粗一点，阻力低一点。
+
+背压低一点，进气顺一点；流量稳一点，气泡匀一点。</p>
+        </div>
+        <div class="mantra-card">
+          <h3>二、喉部相关</h3>
+          <p>短喉容易吸，长喉容易碎。
+
+喉长不够，负压未成；喉长过头，摩擦先赢。
+
+喉部越稳，吸气越稳；喉部越乱，气泡越散。
+
+喉长决定的不只是吸多少，更决定气泡能碎多小。
+
+喉径决定“吸得进”，喉长决定“打得碎”。</p>
+        </div>
+        <div class="mantra-card">
+          <h3>三、扩散段相关</h3>
+          <p>扩散太急，气体顶回；扩散太短，气泡变粗。
+
+长扩散不一定吸更多，但往往能做更细。
+
+扩散段越稳，压力恢复越柔；压力恢复越柔，气泡存活越久。
+
+扩散段不是排水段，而是二次破碎段。</p>
+        </div>
+        <div class="mantra-card">
+          <h3>四、进气侧经验</h3>
+          <p>吸不上气，先别改喉径，先查气路阻力。
+
+很多系统限制吸气量的，不是文丘里，而是止回阀。
+
+进气弯头每多一个，负压就浪费一点。
+
+吸气口离喉部越近，负压利用越充分。
+
+进气口开错位置，再大负压也难吸。</p>
+        </div>
+        <div class="mantra-card">
+          <h3>五、微纳米气泡专用经验</h3>
+          <p>吸气量大，不等于气泡细。
+
+气太多，容易变白泡；剪切不够，难出纳米泡。
+
+白得快的不一定好，悬得久的通常更细。
+
+大泡靠吸，小泡靠剪，纳米泡靠停留。
+
+吸进去只是开始，剪碎了才算成功。
+
+气液混合不是终点，气泡稳定才是核心。</p>
+        </div>
+        <div class="mantra-card">
+          <h3>六、空化与剪切</h3>
+          <p>负压够低，才有空化；停留够长，空化才强。
+
+空化不是越强越好，而是越可控越好。
+
+强空化容易打碎气泡，也容易打废流场。
+
+空化带来剪切，剪切带来细泡。</p>
+        </div>
+        <div class="mantra-card">
+          <h3>七、系统级经验</h3>
+          <p>泵决定流量，文丘里决定负压。
+
+压力不是关键，速度才是关键。
+
+静压再高，没有流速也吸不上气。
+
+文丘里前看流量，文丘里后看背压。
+
+系统压损省下来的，最后都会变成吸气能力。</p>
+        </div>
+        <div class="mantra-card">
+          <h3>八、工程实用句</h3>
+          <p>想提升吸气量，先减阻；想提升泡质，再剪切。
+
+吸气靠负压，细泡靠能量密度。
+
+真正的纳米泡系统，往往不是最能吸气的系统。
+
+流场稳定，比参数极限更重要。
+
+实验里最怕的不是吸气少，而是工况不稳定。
+
+同样的吸气量，流场不同，结果可能差十倍。</p>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <p class="footer-note">提示：该网页把气液混合、压恢复和出口射流简化为工程趋势模型。若用于真实设备，请用样机测试标定流量系数、局部损失系数、扩散段分离边界和材料承压裕度。</p>
+
+  <script>
+    const state = {
+      airMode: "flow",
+      airFlowUnit: "lpm",
+      pressureUnit: "kpa",
+      modelKey: "mixing",
+      values: {
+        waterFlowLpm: 4,
+        inletGaugeKpa: 220,
+        waterTempC: 20,
+        airFlowLpm: 0.4,
+        airPortMm: 0.8,
+        airPortOffsetMm: 0,
+        atmKpa: 101.325,
+        airTempC: 20,
+        backGaugeKpa: 50,
+        maxOuterMm: 10,
+        targetLossKpa: 90,
+        roughnessUm: 5
+      },
+      targetValues: {
+        targetBackKpa: 50,
+        targetMaxInletKpa: 650
+      },
+      manualValues: {
+        waterFlowLpm: 4,
+        airFlowLpm: 0.4,
+        inletGaugeKpa: 220,
+        backGaugeKpa: 50,
+        atmKpa: 101.325,
+        waterTempC: 20,
+        airTempC: 20,
+        inletMm: 8,
+        throatMm: 3.2,
+        outletMm: 6,
+        contractionDeg: 22,
+        diffuserDeg: 7,
+        throatLengthMm: 4.8,
+        airPortMm: 0.8,
+        airPortOffsetMm: 0,
+        roughnessUm: 5
+      },
+      deepValues: {
+        nodeCount: 24,
+        slipRatio: 1,
+        bubbleDiameterMm: 1.5,
+        useAirExpansion: true,
+        useTwoPhaseDensity: true
+      }
+    };
+
+    const modelConfigs = {
+      mixing: {
+        label: "小型水气混合",
+        description: "适合 12 L/min 以下进水、1.5 L/min 以下进气、进水口可校核至 50 mm 的小型加工件，按 0.01 mm 几何精度做初选。",
+        maxThroatRatio: 0.62,
+        contractionBaseLoss: 0.070,
+        throatFrictionMultiplier: 2.7,
+        recoveryBase: 0.70,
+        recoveryMin: 0.40,
+        recoveryMax: 0.74,
+        diffuserLossBase: 0.12,
+        cavitationWarnKpa: 12,
+        cavitationBadKpa: 3,
+        cavitationTargetKpa: 8,
+        gasRatioWarn: 0.45,
+        gasRatioHigh: 0.22,
+        searchPressureStepKpa: 5,
+        angleMin: 14,
+        angleMax: 32,
+        diffuserMin: 4.5,
+        diffuserMax: 8.5
+      },
+      aeration: {
+        label: "水处理曝气",
+        description: "小流量水处理曝气校核，仍围绕 12 L/min 以下水量和 1.5 L/min 以下进气调教，进水口上限放宽至 50 mm。",
+        maxThroatRatio: 0.64,
+        contractionBaseLoss: 0.080,
+        throatFrictionMultiplier: 3.0,
+        recoveryBase: 0.66,
+        recoveryMin: 0.38,
+        recoveryMax: 0.72,
+        diffuserLossBase: 0.15,
+        cavitationWarnKpa: 16,
+        cavitationBadKpa: 5,
+        cavitationTargetKpa: 12,
+        gasRatioWarn: 0.60,
+        gasRatioHigh: 0.30,
+        searchPressureStepKpa: 5,
+        angleMin: 13,
+        angleMax: 30,
+        diffuserMin: 4,
+        diffuserMax: 7.5
+      },
+      industrial: {
+        label: "工业喷射器",
+        description: "小尺寸工业喷射器保守校核，进水口可至 50 mm，重点限制空化、扩散段分离和 0.01 mm 级喉径加工误差带来的偏差。",
+        maxThroatRatio: 0.58,
+        contractionBaseLoss: 0.095,
+        throatFrictionMultiplier: 3.3,
+        recoveryBase: 0.62,
+        recoveryMin: 0.34,
+        recoveryMax: 0.68,
+        diffuserLossBase: 0.18,
+        cavitationWarnKpa: 25,
+        cavitationBadKpa: 10,
+        cavitationTargetKpa: 18,
+        gasRatioWarn: 0.35,
+        gasRatioHigh: 0.18,
+        searchPressureStepKpa: 5,
+        angleMin: 12,
+        angleMax: 28,
+        diffuserMin: 3.5,
+        diffuserMax: 6.5
+      },
+      thirdParty: {
+        label: "第三方模型",
+        description: "开放主要经验系数和阈值给用户自定义，默认参数同小流量场景，进水口上限放宽至 50 mm，适合用实测数据继续调教。",
+        maxThroatRatio: 0.62,
+        contractionBaseLoss: 0.070,
+        throatFrictionMultiplier: 2.7,
+        recoveryBase: 0.70,
+        recoveryMin: 0.40,
+        recoveryMax: 0.74,
+        diffuserLossBase: 0.12,
+        cavitationWarnKpa: 12,
+        cavitationBadKpa: 3,
+        cavitationTargetKpa: 8,
+        gasRatioWarn: 0.45,
+        gasRatioHigh: 0.22,
+        searchPressureStepKpa: 5,
+        angleMin: 14,
+        angleMax: 32,
+        diffuserMin: 4.5,
+        diffuserMax: 8.5
+      }
+    };
+
+    const customModelParamSpecs = [
+      ["maxThroatRatio", "最大喉径/外径", "", 0.2, 0.8, 0.01],
+      ["contractionBaseLoss", "收缩基础损失", "", 0.01, 0.25, 0.005],
+      ["throatFrictionMultiplier", "喉部摩擦倍率", "", 0.5, 6, 0.1],
+      ["recoveryBase", "压恢复基准效率", "", 0.2, 0.95, 0.01],
+      ["recoveryMin", "压恢复下限", "", 0.1, 0.9, 0.01],
+      ["recoveryMax", "压恢复上限", "", 0.1, 0.98, 0.01],
+      ["diffuserLossBase", "扩散基础损失", "", 0.01, 0.4, 0.005],
+      ["cavitationWarnKpa", "空化警告裕度", "kPa", 1, 80, 1],
+      ["cavitationBadKpa", "空化危险裕度", "kPa", 0, 50, 1],
+      ["cavitationTargetKpa", "反算空化目标", "kPa", 1, 80, 1],
+      ["gasRatioWarn", "气水比警告", "", 0.1, 5, 0.05],
+      ["gasRatioHigh", "高含气阈值", "", 0.05, 3, 0.05],
+      ["searchPressureStepKpa", "搜索压力步进", "kPa", 1, 50, 1],
+      ["angleMin", "收缩半角下限", "deg", 5, 35, 0.5],
+      ["angleMax", "收缩半角上限", "deg", 10, 45, 0.5],
+      ["diffuserMin", "扩散半角下限", "deg", 2, 10, 0.1],
+      ["diffuserMax", "扩散半角上限", "deg", 3, 15, 0.1]
+    ];
+
+    function getModelConfig(modelKey = state.modelKey) {
+      return modelConfigs[modelKey] || modelConfigs.mixing;
+    }
+
+    const fieldGroups = {
+      waterFields: [
+        ["waterFlowLpm", "水流量", "L/min", 0.05, 12, 0.01],
+        ["inletGaugeKpa", "入口压力", "kPa(g)", 20, 1200, 5],
+        ["waterTempC", "水温", "C", 0, 120, 1]
+      ],
+      airFlowField: [
+        ["airFlowLpm", "目标进气量", "L/min", 0, 1.5, 0.01]
+      ],
+      airDiameterField: [
+        ["airPortMm", "进气口等效直径", "mm", 0.05, 4.5, 0.01],
+      ],
+      airPositionField: [
+        ["airPortOffsetMm", "进气口轴线位置", "mm", -20, 30, 0.01]
+      ],
+      environmentFields: [
+        ["atmKpa", "大气压", "kPa(abs)", 70, 165, 0.1],
+        ["airTempC", "空气温度", "C", -10, 90, 1],
+        ["backGaugeKpa", "出口背压", "kPa(g)", 0, 750, 5]
+      ],
+      constraintFields: [
+        ["maxOuterMm", "最大入口/外径", "mm", 3, 50, 0.01],
+        ["targetLossKpa", "期望压损", "kPa", 10, 600, 5],
+        ["roughnessUm", "管壁粗糙度", "um", 1, 90, 1]
+      ]
+    };
+
+    const fields = {};
+    const manualFields = {};
+    let latest = null;
+    let targetSolution = null;
+    let manualResult = null;
+    let deepResult = null;
+    let particleSeed = 0;
+
+    const KG_PRESSURE_KPA = 98.0665;
+    const pressureKinds = {
+      inletGaugeKpa: "gauge",
+      atmKpa: "abs",
+      backGaugeKpa: "gauge",
+      targetLossKpa: "delta"
+    };
+
+    const pressureUnits = {
+      kpa: { factor: 1, stepFactor: 1, gauge: "kPa(g)", abs: "kPa(abs)", delta: "kPa", digits: 2 },
+      mpa: { factor: 0.001, stepFactor: 0.001, gauge: "MPa(g)", abs: "MPa(abs)", delta: "MPa", digits: 4 },
+      kg: { factor: 1 / KG_PRESSURE_KPA, stepFactor: 1 / KG_PRESSURE_KPA, gauge: "kgf/cm²(g)", abs: "kgf/cm²(abs)", delta: "kgf/cm²", digits: 3 }
+    };
+
+    const targetPressureInputs = [
+      { id: "targetBackPressure", key: "targetBackKpa", min: 0, max: 750, step: 5, kind: "gauge" },
+      { id: "targetMaxInletPressure", key: "targetMaxInletKpa", min: 80, max: 1500, step: 5, kind: "gauge" }
+    ];
+
+    const formulaCatalog = {
+      continuity: ["连续方程", "Q = A · v", "水流量 Q 由截面积 A 和平均速度 v 决定，用于入口、喉部和出口速度计算。"],
+      reynolds: ["雷诺数", "Re = ρ · v · D / μ", "用水密度、速度、直径和黏度判断流动状态，并选择摩擦因子估算方式。"],
+      friction: ["摩擦因子近似", "层流 f = 64/Re；湍流采用 Swamee-Jain 近似", "用于估算喉部沿程损失，粗糙度越大损失越高。"],
+      bernoulli: ["伯努利压降", "Δp_throat = 0.5 · ρ · (v_t² - v_in²) · (1 + K_c + K_t)", "由速度升高和局部/沿程损失估算喉部压力下降。"],
+      throat: ["喉部压力", "p_t = p_in,abs - Δp_throat", "喉部绝压低于空气入口压力时才可能吸气。"],
+      recovery: ["扩散段压恢复", "p_out,free = p_t + η_r · 0.5ρ(v_t²-v_out²) - Δp_diffuser", "扩散角、粗糙度和模型类型会影响压恢复效率和扩散段损失。"],
+      air: ["空气孔口流量", "ṁ = C_d · A · p0 · f(p2/p0, γ, R, T)", "按简化可压缩孔口流估算吸入空气量或反算空气入口等效直径。"],
+      critical: ["临界流判断", "p2/p0 ≤ (2/(γ+1))^(γ/(γ-1))", "当压比低于临界值时，空气入口可能达到临界流，进气量不再线性增加。"],
+      gasRatio: ["气水比", "R_g = Q_air / Q_water", "用于表示进气强度，并参与含气率和模型风险提示。"],
+      voidFraction: ["估算含气率", "α = Q_air / (Q_air + Q_water)", "用体积流量近似估算出口混合流中的空气体积分数。"],
+      cavitation: ["空化裕度", "NPS margin = p_t - p_vapor(T_water)", "喉部绝压越接近水蒸气压，空化风险越高。"],
+      backPressure: ["背压判定", "p_out,free ≥ p_back,abs", "出口可用压力必须高于设定背压，否则出口流动不成立。"],
+      reverse: ["逆流判定", "p_mix > p_air,in", "混合段压力高于空气入口压力时，径向进气口可能倒灌/逆流。"],
+      manualAngles: ["手动角度损失", "K_c = f(θ_c)，η_r 与 K_d = f(θ_d)", "手动校核页使用用户输入的收缩半角和扩散半角，不自动推荐角度。"],
+      airPortPosition: ["进气口轴线位置", "η_air = f(x_air / L_throat)", "进气口越接近喉部低压核心，负压利用越充分；偏离喉部会降低吸气效率并提高倒灌敏感性。"],
+      segmentedContinuity: ["分段连续方程", "v(x) = [Q_water + Q_air(x)] / A(x)", "深度页把文丘里沿轴向离散成多个节点，用每个节点直径计算局部混合流速。"],
+      segmentedBernoulli: ["分段伯努利压降", "p(x_i) = p(x_{i-1}) - Δp_acc - Δp_loss + Δp_recovery", "沿入口、收缩、喉部、扩散和出口分段估算加速压降、摩擦损失和扩散压恢复。"],
+      airExpansion: ["空气体积膨胀", "Q_air(x) = Q_air,in · p_air,in / p(x)", "开启空气膨胀修正时，压力越低空气体积流量越大，含气率也会升高。"],
+      mixtureDensity: ["两相混合密度", "ρ_mix = α · ρ_air + (1 - α) · ρ_water", "开启两相密度修正时，用局部含气率估算混合密度，用于趋势校核。"],
+      deepVoidFraction: ["分段含气率", "α(x) = Q_air(x) / [Q_air(x) + Q_water]", "按局部空气体积流量和水流量估算每个节点的空气体积分数。"],
+      deepCavitation: ["分段空化裕度", "margin(x) = p(x) - p_vapor(T_water)", "逐节点比较局部绝压和水蒸气压，定位最接近空化的区域。"],
+      deepBackReverse: ["分段背压与逆流", "p_out,available ≥ p_back,abs；p_mix ≤ p_air,in", "出口段压力不足会触发背压失败；喉部/混合段压力高于空气入口压力会提示逆流风险。"]
+    };
+
+    const pageFormulas = {
+      sim: ["continuity", "reynolds", "friction", "bernoulli", "throat", "recovery", "air", "critical", "airPortPosition", "gasRatio", "voidFraction", "cavitation", "backPressure", "reverse"],
+      target: ["continuity", "reynolds", "friction", "bernoulli", "throat", "recovery", "air", "critical", "airPortPosition", "gasRatio", "voidFraction", "cavitation", "backPressure", "reverse"],
+      manual: ["continuity", "reynolds", "friction", "bernoulli", "throat", "recovery", "air", "critical", "airPortPosition", "gasRatio", "voidFraction", "cavitation", "backPressure", "reverse", "manualAngles"],
+      deep: ["continuity", "reynolds", "friction", "segmentedContinuity", "segmentedBernoulli", "air", "critical", "airExpansion", "mixtureDensity", "deepVoidFraction", "deepCavitation", "deepBackReverse", "airPortPosition", "manualAngles"]
+    };
+
+    function fieldDisplay(base) {
+      if (base.key === "airFlowLpm" && state.airFlowUnit === "mlpm") {
+        return { factor: 1000, unit: "mL/min", min: 0, max: 1500, step: 10 };
+      }
+      if (pressureKinds[base.key]) {
+        const unit = pressureUnits[state.pressureUnit];
+        return {
+          factor: unit.factor,
+          unit: unit[pressureKinds[base.key]],
+          min: base.min * unit.factor,
+          max: base.max * unit.factor,
+          step: base.step * unit.stepFactor
+        };
+      }
+      return { factor: 1, unit: base.unit, min: base.min, max: base.max, step: base.step };
+    }
+
+    function clamp(value, min, max) {
+      return Math.min(max, Math.max(min, value));
+    }
+
+    function fmt(value, digits = 2) {
+      if (!Number.isFinite(value)) return "--";
+      if (Math.abs(value) >= 100) return value.toFixed(1);
+      if (Math.abs(value) >= 10) return value.toFixed(digits);
+      return value.toFixed(Math.min(3, digits + 1));
+    }
+
+    function fmtMm(value) {
+      return Number.isFinite(value) ? value.toFixed(2) : "--";
+    }
+
+    function fmtPressure(valueKpa, kind = "delta") {
+      const unit = pressureUnits[state.pressureUnit];
+      return `${fmt(valueKpa * unit.factor, unit.digits)} ${unit[kind]}`;
+    }
+
+    function pressureDisplayValue(valueKpa) {
+      return valueKpa * pressureUnits[state.pressureUnit].factor;
+    }
+
+    function pressureInputToKpa(value) {
+      return Number(value) / pressureUnits[state.pressureUnit].factor;
+    }
+
+    function inputDisplay(value) {
+      if (!Number.isFinite(value)) return "";
+      return Number(value.toFixed(5));
+    }
+
+    function waterDensity(tempC) {
+      const t = tempC;
+      return 1000 * (1 - ((t + 288.9414) / (508929.2 * (t + 68.12963))) * Math.pow(t - 3.9863, 2));
+    }
+
+    function waterViscosity(tempC) {
+      const tK = tempC + 273.15;
+      return 2.414e-5 * Math.pow(10, 247.8 / (tK - 140));
+    }
+
+    function waterVaporPressureKpa(tempC) {
+      const a = 8.07131;
+      const b = 1730.63;
+      const c = 233.426;
+      const mmHg = Math.pow(10, a - b / (c + tempC));
+      return mmHg * 0.133322;
+    }
+
+    function airDensity(atmKpa, tempC) {
+      return (atmKpa * 1000) / (287.05 * (tempC + 273.15));
+    }
+
+    function areaFromDiameterMm(dMm) {
+      const d = Math.max(0, dMm) / 1000;
+      return Math.PI * d * d / 4;
+    }
+
+    function diameterFromAreaM2(area) {
+      return Math.sqrt(Math.max(0, area) * 4 / Math.PI) * 1000;
+    }
+
+    function calcAirFlowLpm(portMm, upstreamKpaAbs, throatKpaAbs, tempC) {
+      const cd = 0.72;
+      const gamma = 1.4;
+      const r = 287.05;
+      const area = areaFromDiameterMm(portMm);
+      const p0 = upstreamKpaAbs * 1000;
+      const p2 = Math.max(1000, throatKpaAbs * 1000);
+      const t0 = tempC + 273.15;
+      if (area <= 0 || p0 <= p2) return { lpm: 0, choked: false };
+      const ratio = p2 / p0;
+      const critical = Math.pow(2 / (gamma + 1), gamma / (gamma - 1));
+      let massFlow;
+      let choked = false;
+      if (ratio <= critical) {
+        choked = true;
+        massFlow = cd * area * p0 * Math.sqrt(gamma / (r * t0)) * Math.pow(2 / (gamma + 1), (gamma + 1) / (2 * (gamma - 1)));
+      } else {
+        const term = Math.pow(ratio, 2 / gamma) - Math.pow(ratio, (gamma + 1) / gamma);
+        massFlow = cd * area * p0 * Math.sqrt((2 * gamma / (r * t0 * (gamma - 1))) * Math.max(0, term));
+      }
+      const rhoStd = airDensity(upstreamKpaAbs, tempC);
+      const qM3s = massFlow / Math.max(0.01, rhoStd);
+      return { lpm: qM3s * 60000, choked };
+    }
+
+    function requiredAirPortMm(targetLpm, upstreamKpaAbs, throatKpaAbs, tempC) {
+      if (targetLpm <= 0 || upstreamKpaAbs <= throatKpaAbs) return 0;
+      const unit = calcAirFlowLpm(1, upstreamKpaAbs, throatKpaAbs, tempC);
+      if (unit.lpm <= 0) return 0;
+      return Math.sqrt(targetLpm / unit.lpm);
+    }
+
+    function airPortPositionEffect(offsetMm, throatLengthMm, throatMm) {
+      const offset = Number.isFinite(Number(offsetMm)) ? Number(offsetMm) : 0;
+      const length = Math.max(0.5, throatLengthMm || throatMm * 1.5 || 1);
+      const upstreamPenalty = Math.max(0, -offset) / Math.max(1, throatMm * 2.2);
+      const downstreamPenalty = Math.max(0, offset) / Math.max(1, length * 1.2);
+      const normalized = offset / Math.max(1, length);
+      const suctionEfficiency = clamp(1 - 0.16 * upstreamPenalty - 0.28 * downstreamPenalty, 0.45, 1.08);
+      const mixingBonus = clamp(1 + Math.max(0, offset) / Math.max(1, length) * 0.08 - Math.abs(normalized) * 0.035, 0.88, 1.12);
+      const reverseSensitivity = clamp(1 + Math.max(0, offset) / Math.max(1, length) * 0.16 + Math.max(0, -offset) / Math.max(1, throatMm * 4) * 0.08, 0.95, 1.35);
+      return { offsetMm: offset, suctionEfficiency, mixingBonus, reverseSensitivity };
+    }
+
+    function estimateAngles(input, throatMm, inletMm, outletMm, vTh) {
+      const model = getModelConfig(input.modelKey);
+      const throatToInlet = throatMm / Math.max(1, inletMm);
+      const throatToOutlet = throatMm / Math.max(1, outletMm);
+      const targetGasRatio = input.airFlowLpm / Math.max(0.01, input.waterFlowLpm);
+      const pressureBias = Math.max(0, input.inletGaugeKpa - 120) / 100;
+      const contractionDeg = clamp(
+        13.5 + throatToInlet * 12 + vTh * 0.07 + pressureBias * 0.9 - targetGasRatio * 1.2,
+        model.angleMin,
+        model.angleMax
+      );
+      const diffuserDeg = clamp(
+        8.2 - input.backGaugeKpa * 0.004 - targetGasRatio * 0.55 - input.roughnessUm * 0.012 + (throatToOutlet - 0.55) * 3,
+        model.diffuserMin,
+        model.diffuserMax
+      );
+      return { contractionDeg, diffuserDeg };
+    }
+
+    function evaluateGeometry(input, geometry = {}) {
+      const model = getModelConfig(input.modelKey);
+      const rho = waterDensity(input.waterTempC);
+      const mu = waterViscosity(input.waterTempC);
+      const qWater = input.waterFlowLpm / 60000;
+      const inletAbs = input.atmKpa + input.inletGaugeKpa;
+      const backAbs = input.atmKpa + input.backGaugeKpa;
+      const throatMm = geometry.throatMm;
+      const inletMm = geometry.inletMm;
+      const outletMm = geometry.outletMm;
+      const throatLengthMm = geometry.throatLengthMm || clamp(throatMm * 1.5, 6, 36);
+      const airPortOffsetMm = Number.isFinite(Number(geometry.airPortOffsetMm))
+        ? Number(geometry.airPortOffsetMm)
+        : Number.isFinite(Number(input.airPortOffsetMm))
+          ? Number(input.airPortOffsetMm)
+          : 0;
+      const positionEffect = airPortPositionEffect(airPortOffsetMm, throatLengthMm, throatMm);
+      const aIn = areaFromDiameterMm(inletMm);
+      const aTh = areaFromDiameterMm(throatMm);
+      const aOut = areaFromDiameterMm(outletMm);
+      const vIn = qWater / Math.max(1e-9, aIn);
+      const vTh = qWater / Math.max(1e-9, aTh);
+      const vOut = qWater / Math.max(1e-9, aOut);
+      const roughnessM = input.roughnessUm * 1e-6;
+      const reynolds = rho * vTh * (throatMm / 1000) / Math.max(1e-6, mu);
+      const friction = reynolds > 2300 ? 0.25 / Math.pow(Math.log10(roughnessM / (3.7 * throatMm / 1000) + 5.74 / Math.pow(reynolds, 0.9)), 2) : 64 / Math.max(1, reynolds);
+      const angles = geometry.manualAngles
+        ? { contractionDeg: geometry.contractionDeg, diffuserDeg: geometry.diffuserDeg }
+        : estimateAngles(input, throatMm, inletMm, outletMm, vTh);
+      const { contractionDeg, diffuserDeg } = angles;
+      const angleLossBias = Math.max(0, contractionDeg - 18) * 0.006 + Math.max(0, 16 - contractionDeg) * 0.004;
+      const kContraction = model.contractionBaseLoss + angleLossBias + 0.08 * Math.pow(throatMm / Math.max(1, inletMm), 2);
+      const kThroat = friction * model.throatFrictionMultiplier;
+      const throatDropKpa = (0.5 * rho * (vTh * vTh - vIn * vIn) * (1 + kContraction + kThroat)) / 1000;
+      const throatAbs = inletAbs - throatDropKpa;
+      const diffuserAnglePenalty = Math.abs(diffuserDeg - 6) * 0.032 + Math.max(0, diffuserDeg - 7) * 0.045;
+      const recoveryEfficiency = clamp(model.recoveryBase - diffuserAnglePenalty - 0.008 * Math.max(0, input.roughnessUm - 5), model.recoveryMin, model.recoveryMax);
+      const recoveryKpa = recoveryEfficiency * (0.5 * rho * (vTh * vTh - vOut * vOut)) / 1000;
+      const diffuserLossCoefficient = model.diffuserLossBase + Math.abs(diffuserDeg - 6) * 0.035 + Math.pow(Math.max(0, diffuserDeg - 7), 2) * 0.018;
+      const diffuserLossKpa = (0.5 * rho * vTh * vTh * diffuserLossCoefficient) / 1000;
+      const outletAbsFree = throatAbs + recoveryKpa - diffuserLossKpa;
+      const availableGaugeKpa = outletAbsFree - input.atmKpa;
+      const backPenalty = Math.max(0, backAbs - outletAbsFree);
+      const mixedAbs = throatAbs + backPenalty * 0.65 * positionEffect.reverseSensitivity;
+      const airDrivingKpa = input.atmKpa - mixedAbs;
+      const reverse = mixedAbs > input.atmKpa + 1;
+      const suction = airDrivingKpa > 0;
+      const cavitationMarginKpa = throatAbs - waterVaporPressureKpa(input.waterTempC);
+      const airMode = input.airMode || state.airMode;
+      const portMm = airMode === "flow"
+        ? requiredAirPortMm(input.airFlowLpm / positionEffect.suctionEfficiency, input.atmKpa, mixedAbs, input.airTempC)
+        : geometry.airPortMm || input.airPortMm;
+      const rawAir = suction && !reverse
+        ? calcAirFlowLpm(portMm, input.atmKpa, mixedAbs, input.airTempC)
+        : { lpm: 0, choked: false };
+      const air = { lpm: rawAir.lpm * positionEffect.suctionEfficiency, choked: rawAir.choked };
+      const targetAir = airMode === "flow" ? input.airFlowLpm : air.lpm;
+      const gasRatio = air.lpm / Math.max(0.01, input.waterFlowLpm);
+      const voidFraction = air.lpm / Math.max(0.01, air.lpm + input.waterFlowLpm);
+      const pressureLossKpa = input.inletGaugeKpa - availableGaugeKpa;
+      const backOk = outletAbsFree >= backAbs;
+      const score = Math.abs(input.targetLossKpa - pressureLossKpa)
+        + Math.max(0, targetAir - air.lpm) * 3
+        + Math.abs(air.lpm - targetAir) * 0.55
+        + Math.max(0, -cavitationMarginKpa + 8) * 6
+        + (backOk ? 0 : 180 + backPenalty * 2)
+        + (reverse ? 300 : 0);
+      return {
+        throatMm,
+        inletMm,
+        outletMm,
+        contractionDeg,
+        diffuserDeg,
+        throatLengthMm,
+        airPortMm: portMm,
+        airPortOffsetMm,
+        airPortEfficiency: positionEffect.suctionEfficiency,
+        mixingResidenceFactor: positionEffect.mixingBonus,
+        rho,
+        mu,
+        reynolds,
+        vIn,
+        vTh,
+        vOut,
+        throatAbs,
+        mixedAbs,
+        outletAbsFree,
+        availableGaugeKpa,
+        pressureLossKpa,
+        backPenalty,
+        backOk,
+        suction,
+        reverse,
+        cavitationMarginKpa,
+        vaporKpa: waterVaporPressureKpa(input.waterTempC),
+        airFlowLpm: air.lpm,
+        airChoked: air.choked,
+        targetAirLpm: targetAir,
+        gasRatio,
+        voidFraction,
+        score
+      };
+    }
+
+    function evaluateCandidate(throatMm, input) {
+      const model = getModelConfig(input.modelKey);
+      const desiredInletMm = Number(input.targetInletMm);
+      const inletUpper = Math.max(throatMm + 0.2, input.maxOuterMm * 0.72);
+      const inletBaseline = Number.isFinite(desiredInletMm)
+        ? desiredInletMm
+        : throatMm * 2.05;
+      const inletMm = clamp(inletBaseline, throatMm + 0.2, inletUpper);
+      const outletMm = clamp(throatMm * 1.65, throatMm + 3, input.maxOuterMm * 0.66);
+      return evaluateGeometry(input, { throatMm, inletMm, outletMm, airPortOffsetMm: input.airPortOffsetMm || 0 });
+    }
+
+    function evaluateManualGeometry(input) {
+      return evaluateGeometry({ ...input, airMode: "diameter" }, {
+        inletMm: input.inletMm,
+        throatMm: input.throatMm,
+        outletMm: input.outletMm,
+        contractionDeg: input.contractionDeg,
+        diffuserDeg: input.diffuserDeg,
+        throatLengthMm: input.throatLengthMm,
+        airPortMm: input.airPortMm,
+        airPortOffsetMm: input.airPortOffsetMm,
+        manualAngles: true
+      });
+    }
+
+    function calculate() {
+      const input = { ...state.values, modelKey: state.modelKey };
+      const model = getModelConfig();
+      let best = null;
+      const microFlow = input.waterFlowLpm <= 12;
+      const minThroat = microFlow ? 0.25 : 1.6;
+      const step = microFlow ? 0.01 : 0.08;
+      const maxThroat = clamp(input.maxOuterMm * model.maxThroatRatio, microFlow ? 0.7 : 3, input.maxOuterMm - 0.2);
+      for (let d = minThroat; d <= maxThroat; d += step) {
+        const candidate = evaluateCandidate(d, input);
+        if (!best || candidate.score < best.score) best = candidate;
+      }
+      return best;
+    }
+
+    function solveSuctionTarget() {
+      syncTargetPressureState();
+      const model = getModelConfig();
+      const targetWater = clamp(Number(document.getElementById("targetWaterFlow").value), 0.05, 12);
+      const targetAir = clamp(Number(document.getElementById("targetAirFlow").value), 0.01, 1.5);
+      const targetInletMm = clamp(Number(document.getElementById("targetInletDiameter").value), 1, 50);
+      const targetBack = state.targetValues.targetBackKpa;
+      const maxInlet = state.targetValues.targetMaxInletKpa;
+      const maxAirPort = clamp(Number(document.getElementById("targetMaxAirPort").value), 0.05, 4.5);
+      const targetAirPortOffsetMm = clamp(Number(document.getElementById("targetAirPortOffset").value), -20, 30);
+      const baseInput = {
+        ...state.values,
+        waterFlowLpm: targetWater,
+        airFlowLpm: targetAir,
+        backGaugeKpa: targetBack,
+        maxOuterMm: Math.max(state.values.maxOuterMm, targetInletMm / 0.72, targetInletMm),
+        targetInletMm,
+        airPortOffsetMm: targetAirPortOffsetMm,
+        airMode: "flow",
+        modelKey: state.modelKey
+      };
+      let best = null;
+      let tested = 0;
+      const microFlow = baseInput.waterFlowLpm <= 12;
+      const minThroat = microFlow ? 0.25 : 1.6;
+      const throatStep = microFlow ? 0.01 : 0.08;
+      const maxThroat = clamp(baseInput.maxOuterMm * model.maxThroatRatio, microFlow ? 0.7 : 3, baseInput.maxOuterMm - 0.2);
+      for (let inlet = 60; inlet <= maxInlet; inlet += model.searchPressureStepKpa) {
+        for (let throat = minThroat; throat <= maxThroat; throat += throatStep) {
+          tested++;
+          const candidate = evaluateCandidate(throat, { ...baseInput, inletGaugeKpa: inlet });
+          const valid = candidate.suction
+            && !candidate.reverse
+            && candidate.backOk
+            && candidate.cavitationMarginKpa >= model.cavitationTargetKpa
+            && candidate.airPortMm >= 0.2
+            && candidate.airPortMm <= maxAirPort
+            && candidate.airFlowLpm >= targetAir * 0.985;
+          if (!valid) continue;
+          const score = inlet * 0.35
+            + candidate.pressureLossKpa * 0.45
+            + candidate.airPortMm * 1.8
+            + Math.max(0, 0.82 - candidate.airPortEfficiency) * 28
+            + Math.abs(candidate.inletMm - targetInletMm) * 7
+            + Math.abs(candidate.gasRatio - targetAir / targetWater) * 8
+            + Math.max(0, model.cavitationWarnKpa - candidate.cavitationMarginKpa) * 2;
+          const solution = { ...candidate, inletGaugeKpa: inlet, tested, maxAirPort, targetWater, targetAir, targetInletMm, targetAirPortOffsetMm, targetBack, solutionScore: score };
+          if (!best || solution.solutionScore < best.solutionScore) best = solution;
+        }
+      }
+      return best ? { ok: true, result: best, tested } : { ok: false, tested, targetWater, targetAir, targetInletMm, targetAirPortOffsetMm, targetBack, maxInlet, maxAirPort };
+    }
+
+    function createField(containerId, spec) {
+      const [key, label, unit, min, max, step] = spec;
+      const base = { key, unit, min, max, step };
+      const display = fieldDisplay(base);
+      const container = document.getElementById(containerId);
+      const row = document.createElement("div");
+      row.className = "field";
+      row.innerHTML = `
+        <label>
+          <span class="label-row"><span>${label}</span><span class="unit">${display.unit}</span></span>
+          <input type="range" min="${display.min}" max="${display.max}" step="${display.step}" value="${inputDisplay(state.values[key] * display.factor)}">
+        </label>
+        <input type="number" min="${display.min}" max="${display.max}" step="${display.step}" value="${inputDisplay(state.values[key] * display.factor)}">
+      `;
+      const range = row.querySelector("input[type=range]");
+      const number = row.querySelector("input[type=number]");
+      const unitEl = row.querySelector(".unit");
+      const sync = (value, source) => {
+        const current = fieldDisplay(base);
+        const displayValue = clamp(Number(value), current.min, current.max);
+        const internalValue = displayValue / current.factor;
+        state.values[key] = Number.isFinite(internalValue) ? internalValue : current.min / current.factor;
+        const nextDisplay = inputDisplay(state.values[key] * current.factor);
+        if (source !== range) range.value = nextDisplay;
+        if (source !== number) number.value = nextDisplay;
+        update();
+      };
+      range.addEventListener("input", () => sync(range.value, range));
+      number.addEventListener("input", () => sync(number.value, number));
+      fields[key] = { range, number, unitEl, base };
+      container.appendChild(row);
+    }
+
+    function renderFields() {
+      Object.entries(fieldGroups).forEach(([containerId, specs]) => {
+        specs.forEach((spec) => createField(containerId, spec));
+      });
+    }
+
+    const manualFieldSpecs = [
+      ["waterFlowLpm", "进水量", "L/min", 0.05, 12, 0.01],
+      ["airFlowLpm", "进气量", "L/min", 0, 1.5, 0.01],
+      ["inletGaugeKpa", "入口压力", "kPa(g)", 20, 1500, 5],
+      ["backGaugeKpa", "出口背压", "kPa(g)", 0, 750, 5],
+      ["atmKpa", "大气压", "kPa(abs)", 70, 165, 0.1],
+      ["waterTempC", "水温", "C", 0, 120, 1],
+      ["airTempC", "空气温度", "C", -10, 90, 1],
+      ["inletMm", "入口段直径", "mm", 1, 50, 0.01],
+      ["throatMm", "喉径", "mm", 0.2, 15, 0.01],
+      ["outletMm", "出口段直径", "mm", 1, 15, 0.01],
+      ["contractionDeg", "收缩半角", "deg", 5, 45, 0.1],
+      ["diffuserDeg", "扩散半角", "deg", 2, 15, 0.1],
+      ["throatLengthMm", "喉部长度", "mm", 0.5, 45, 0.01],
+      ["airPortMm", "空气入口等效直径", "mm", 0.05, 4.5, 0.01],
+      ["airPortOffsetMm", "进气口轴线位置", "mm", -20, 30, 0.01],
+      ["roughnessUm", "管壁粗糙度", "um", 1, 120, 1]
+    ];
+
+    function manualFieldDisplay(spec) {
+      const [key, , unit, min, max, step] = spec;
+      if (pressureKinds[key]) {
+        const pressureUnit = pressureUnits[state.pressureUnit];
+        return { unit: pressureUnit[pressureKinds[key]], min: min * pressureUnit.factor, max: max * pressureUnit.factor, step: step * pressureUnit.stepFactor, factor: pressureUnit.factor };
+      }
+      return { unit, min, max, step, factor: 1 };
+    }
+
+    function renderManualFields() {
+      const container = document.getElementById("manualFields");
+      container.innerHTML = "";
+      manualFieldSpecs.forEach((spec) => {
+        const [key, label] = spec;
+        const display = manualFieldDisplay(spec);
+        const row = document.createElement("label");
+        row.className = "target-field";
+        row.innerHTML = `
+          <span class="label-row"><span>${label}</span><span class="unit">${display.unit}</span></span>
+          <input type="number" min="${display.min}" max="${display.max}" step="${display.step}" value="${inputDisplay(state.manualValues[key] * display.factor)}">
+        `;
+        const input = row.querySelector("input");
+        input.addEventListener("input", () => {
+          const raw = clamp(Number(input.value), display.min, display.max);
+          state.manualValues[key] = raw / display.factor;
+          updateManual();
+        });
+        manualFields[key] = { input, spec };
+        container.appendChild(row);
+      });
+    }
+
+    function refreshManualFieldDisplays() {
+      Object.entries(manualFields).forEach(([key, field]) => {
+        const display = manualFieldDisplay(field.spec);
+        const unitEl = field.input.parentElement.querySelector(".unit");
+        unitEl.textContent = display.unit;
+        field.input.min = display.min;
+        field.input.max = display.max;
+        field.input.step = display.step;
+        field.input.value = inputDisplay(state.manualValues[key] * display.factor);
+      });
+    }
+
+    function setValue(key, value) {
+      if (!fields[key]) return;
+      state.values[key] = value;
+      const display = fieldDisplay(fields[key].base);
+      const displayValue = inputDisplay(value * display.factor);
+      fields[key].range.value = displayValue;
+      fields[key].number.value = displayValue;
+    }
+
+    function refreshFieldDisplay(key) {
+      const field = fields[key];
+      if (!field) return;
+      const display = fieldDisplay(field.base);
+      field.unitEl.textContent = display.unit;
+      [field.range, field.number].forEach((input) => {
+        input.min = display.min;
+        input.max = display.max;
+        input.step = display.step;
+        input.value = inputDisplay(state.values[key] * display.factor);
+      });
+    }
+
+    function refreshPressureDisplays() {
+      Object.keys(pressureKinds).forEach((key) => refreshFieldDisplay(key));
+      targetPressureInputs.forEach((config) => {
+        const input = document.getElementById(config.id);
+        const label = document.getElementById(`${config.id}Unit`);
+        const unit = pressureUnits[state.pressureUnit];
+        input.min = config.min * unit.factor;
+        input.max = config.max * unit.factor;
+        input.step = config.step * unit.stepFactor;
+        input.value = inputDisplay(pressureDisplayValue(state.targetValues[config.key]));
+        label.textContent = unit[config.kind];
+      });
+      if (latest) renderOutputs(latest);
+      if (targetSolution) renderTargetSolution({ ok: true, result: targetSolution, tested: targetSolution.tested || 0 });
+      if (!targetSolution) renderTargetSolution(solveSuctionTarget());
+      if (latest) {
+        drawPipe(latest);
+        drawJet(latest);
+      }
+      refreshManualFieldDisplays();
+      if (manualResult) updateManual();
+      if (deepResult) updateDeep();
+    }
+
+    function syncTargetPressureState() {
+      targetPressureInputs.forEach((config) => {
+        const value = pressureInputToKpa(document.getElementById(config.id).value);
+        state.targetValues[config.key] = clamp(value, config.min, config.max);
+      });
+    }
+
+    function adviceHtml(adviceItems = []) {
+      if (!adviceItems.length) return "";
+      return `<div class="advice-stack">${adviceItems.map((item) => `
+        <span class="advice-arrow advice-${item.type}" title="${item.reason}">${item.direction === "up" ? "↑" : "↓"} ${item.label}</span>
+      `).join("")}</div>`;
+    }
+
+    function metricHtml(items, adviceMap = {}) {
+      return items.map(([name, value, key]) => {
+        const advice = adviceMap[key] || [];
+        return `
+        <div class="metric ${advice.length ? "has-advice" : ""}">
+          <div class="metric-name">${name}</div>
+          <div class="metric-value">${value}</div>
+          ${adviceHtml(advice)}
+        </div>
+      `;
+      }).join("");
+    }
+
+    function addAdvice(map, key, direction, type, label, reason) {
+      if (!map[key]) map[key] = [];
+      const exists = map[key].some((item) => item.direction === direction && item.type === type);
+      if (!exists) map[key].push({ direction, type, label, reason });
+    }
+
+    function geometryAdvice(result) {
+      const model = getModelConfig();
+      const map = {};
+      if (result.reverse || !result.suction) {
+        const reason = result.reverse ? "改善进气口逆流：增强喉部负压或降低空气侧负担。" : "改善无法吸气：增强喉部负压。";
+        addAdvice(map, "throatMm", "down", "suction", "吸气", reason);
+        addAdvice(map, "inletMm", "up", "suction", "吸气", reason);
+        if (result.airPortMm > 0.25) addAdvice(map, "airPortMm", "down", "suction", "吸气", "减小进气口可降低空气侧负担，有助于恢复稳定吸气。");
+        if (Math.abs(result.airPortOffsetMm) > 0.05) addAdvice(map, "airPortOffsetMm", result.airPortOffsetMm > 0 ? "down" : "up", "suction", "吸气", "把进气口轴线移向喉部低压核心，可提高负压利用率。");
+        addAdvice(map, "contractionDeg", "up", "suction", "吸气", "略增收缩半角可提高喉部速度趋势，但过大时会增加损失。");
+      }
+      if (!result.backOk || result.backPenalty > 0) {
+        const reason = "改善背压过高：提高出口可用压力和扩散段压恢复。";
+        addAdvice(map, "throatMm", "up", "back", "背压", reason);
+        addAdvice(map, "outletMm", "up", "back", "背压", reason);
+        addAdvice(map, "diffuserDeg", "down", "back", "背压", "减小扩散半角通常有助于降低分离风险并改善压恢复。");
+        addAdvice(map, "throatLengthMm", "up", "back", "背压", "适当增加喉部/混合长度有助于稳定混合，但会增加摩擦损失。");
+        if (result.airPortOffsetMm > 0.05) addAdvice(map, "airPortOffsetMm", "down", "back", "背压", "背压偏高时，过度靠后的进气口更容易被混合段压力顶回。");
+      }
+      if (result.cavitationMarginKpa < model.cavitationWarnKpa) {
+        const reason = "改善空化风险：降低喉部速度或减小局部损失，提高喉部绝压。";
+        addAdvice(map, "throatMm", "up", "cavitation", "空化", reason);
+        addAdvice(map, "contractionDeg", "down", "cavitation", "空化", "减小收缩半角可降低局部损失峰值，有助于提高喉部压力。");
+        addAdvice(map, "inletMm", "up", "cavitation", "空化", "增大入口段直径可降低入口速度和入口损失。");
+      }
+      if (result.gasRatio > model.gasRatioWarn) {
+        const reason = "改善气水比过高：降低吸入空气能力或增加水侧通过能力。";
+        addAdvice(map, "airPortMm", "down", "gas", "气水比", reason);
+        addAdvice(map, "throatMm", "up", "gas", "气水比", "增大喉径会降低负压强度，通常可降低吸气量。");
+      }
+      return map;
+    }
+
+    function applyManualAdvice(result) {
+      const advice = geometryAdvice(result);
+      Object.entries(manualFields).forEach(([key, field]) => {
+        const row = field.input.parentElement;
+        const labelRow = row.querySelector(".label-row");
+        const old = labelRow.querySelector(".advice-stack");
+        if (old) old.remove();
+        if (advice[key]) labelRow.insertAdjacentHTML("beforeend", adviceHtml(advice[key]));
+      });
+    }
+
+    function renderFormulaList(containerId, keys) {
+      document.getElementById(containerId).innerHTML = keys.map((key) => {
+        const [name, expr, desc] = formulaCatalog[key];
+        return `
+          <div class="formula">
+            <div class="formula-name">${name}</div>
+            <div class="formula-expr">${expr}</div>
+            <div class="formula-desc">${desc}</div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderAllFormulas() {
+      renderFormulaList("simFormulaList", pageFormulas.sim);
+      renderFormulaList("targetFormulaList", pageFormulas.target);
+      renderFormulaList("manualFormulaList", pageFormulas.manual);
+      renderFormulaList("deepFormulaList", pageFormulas.deep);
+    }
+
+    function renderModelToggles() {
+      document.querySelectorAll("[data-model-toggle]").forEach((container) => {
+        container.innerHTML = Object.entries(modelConfigs).map(([key, config]) => `
+          <button type="button" data-model-key="${key}" class="${key === state.modelKey ? "active" : ""}">${config.label}</button>
+        `).join("");
+        container.querySelectorAll("button").forEach((button) => {
+          button.addEventListener("click", () => setModel(button.dataset.modelKey));
+        });
+      });
+      document.querySelectorAll("[data-model-description]").forEach((container) => {
+        container.textContent = getModelConfig().description;
+      });
+      renderCustomModelFields();
+    }
+
+    function setModel(modelKey) {
+      state.modelKey = modelKey;
+      renderModelToggles();
+      update();
+      renderTargetSolution(solveSuctionTarget());
+      updateManual();
+      if (deepResult) updateDeep();
+    }
+
+    function renderCustomModelFields() {
+      document.querySelectorAll("[data-custom-model-fields]").forEach((container) => {
+        const active = state.modelKey === "thirdParty";
+        container.classList.toggle("active", active);
+        if (!active) {
+          container.innerHTML = "";
+          return;
+        }
+        const config = getModelConfig("thirdParty");
+        container.innerHTML = `
+          <div class="hint">第三方模型参数会直接影响自动搜索、手动校核、风险阈值和几何角度范围。</div>
+          <div class="custom-model-grid">
+            ${customModelParamSpecs.map(([key, label, unit, min, max, step]) => `
+              <label class="target-field">
+                <span class="label-row"><span>${label}</span><span class="unit">${unit}</span></span>
+                <input data-custom-param="${key}" type="number" min="${min}" max="${max}" step="${step}" value="${inputDisplay(config[key])}">
+              </label>
+            `).join("")}
+          </div>
+        `;
+        container.querySelectorAll("[data-custom-param]").forEach((input) => {
+          input.addEventListener("input", () => {
+            const spec = customModelParamSpecs.find(([key]) => key === input.dataset.customParam);
+            const [, , , min, max] = spec;
+            modelConfigs.thirdParty[input.dataset.customParam] = clamp(Number(input.value), min, max);
+            update();
+            renderTargetSolution(solveSuctionTarget());
+            updateManual();
+            if (deepResult) updateDeep();
+            document.querySelectorAll(`[data-custom-param="${input.dataset.customParam}"]`).forEach((other) => {
+              if (other !== input) other.value = input.value;
+            });
+          });
+        });
+      });
+    }
+
+    function classify(result) {
+      const model = getModelConfig();
+      if (result.reverse || !result.backOk || result.cavitationMarginKpa < model.cavitationBadKpa) return "bad";
+      if (!result.suction || result.cavitationMarginKpa < model.cavitationWarnKpa || result.gasRatio > model.gasRatioWarn || result.backPenalty > 0) return "warn";
+      return "good";
+    }
+
+    function escapeAttr(text) {
+      return String(text).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    function statusTooltip(label, result) {
+      const model = getModelConfig();
+      if (label === "吸气状态") {
+        if (result.reverse) return "进气口逆流时，管内水气混合物可能从空气孔倒灌，实际进气会中断，并可能污染空气管路。";
+        if (result.suction) return "可吸气表示喉部/混合段压力低于空气入口压力，空气会被吸入并参与混合。";
+        return "无法吸气表示喉部负压不足，空气不会稳定进入，出口基本按纯水或弱混合状态工作。";
+      }
+      if (label === "出口背压") {
+        if (result.backOk) return "背压可克服表示出口可用压力高于设定背压，射流可以排出，进气状态更容易保持稳定。";
+        return "背压过高会压低出口流量和射流长度，并把混合段压力推高，可能导致吸气减弱、停止或进气口倒灌。";
+      }
+      if (label === "空化判断") {
+        if (result.cavitationMarginKpa < model.cavitationBadKpa) return "空化风险高时，喉部可能产生汽泡塌陷，导致噪声、振动、流量失真和内壁冲蚀。";
+        if (result.cavitationMarginKpa < model.cavitationWarnKpa) return "接近空化表示喉部压力余量偏小，实际加工误差或温度升高都可能把系统推入空化区。";
+        return "空化裕度足表示喉部压力距离水蒸气压还有余量，当前参数下不容易产生空化。";
+      }
+      if (label === "混合强度") {
+        if (result.gasRatio > model.gasRatioWarn) return "气水比过高时，两相流简化误差会增大，可能出现不稳定大气泡、出口脉动和吸气量偏离计算值。";
+        if (result.gasRatio > model.gasRatioHigh) return "高含气混合表示气泡密度较高，出口更像气液泡沫射流，建议用样机校准进气量。";
+        return "常规混合表示气水比处于当前模型建议范围内，结果更适合作为工程初选参考。";
+      }
+      return "";
+    }
+
+    function statusCardHtml(label, value, cls, result) {
+      const tip = statusTooltip(label, result);
+      return `
+        <div class="status-card ${cls}" ${tip ? `data-tooltip="${escapeAttr(tip)}" title="${escapeAttr(tip)}"` : ""}>
+          <div class="status-label">${label}</div>
+          <div class="status-value">${value}</div>
+        </div>
+      `;
+    }
+
+    function renderOutputs(result) {
+      const statusClass = classify(result);
+      const suctionText = result.reverse ? "进气口逆流" : result.suction ? "可吸气" : "无法吸气";
+      const backText = result.backOk ? "背压可克服" : "背压过高";
+      const model = getModelConfig();
+      const cavText = result.cavitationMarginKpa < model.cavitationBadKpa ? "空化风险高" : result.cavitationMarginKpa < model.cavitationWarnKpa ? "接近空化" : "空化裕度足";
+      const mixText = result.gasRatio > model.gasRatioWarn ? "气水比过高" : result.gasRatio > model.gasRatioHigh ? "高含气混合" : "常规混合";
+      document.getElementById("statusStrip").innerHTML = [
+        ["吸气状态", suctionText, result.reverse ? "bad" : result.suction ? "good" : "warn"],
+        ["出口背压", backText, result.backOk ? "good" : "bad"],
+        ["空化判断", cavText, result.cavitationMarginKpa < model.cavitationBadKpa ? "bad" : result.cavitationMarginKpa < model.cavitationWarnKpa ? "warn" : "good"],
+        ["混合强度", mixText, result.gasRatio > model.gasRatioWarn ? "warn" : "good"]
+      ].map(([label, value, cls]) => statusCardHtml(label, value, cls, result)).join("");
+
+      const advice = geometryAdvice(result);
+      document.getElementById("geometryMetrics").innerHTML = metricHtml([
+        ["入口段直径", `${fmtMm(result.inletMm)} mm`, "inletMm"],
+        ["喉径", `${fmtMm(result.throatMm)} mm`, "throatMm"],
+        ["出口段直径", `${fmtMm(result.outletMm)} mm`, "outletMm"],
+        ["收缩半角", `${fmt(result.contractionDeg, 1)} deg`, "contractionDeg"],
+        ["扩散半角", `${fmt(result.diffuserDeg, 1)} deg`, "diffuserDeg"],
+        ["喉部长度", `${fmtMm(result.throatLengthMm)} mm`, "throatLengthMm"],
+        ["空气入口等效直径", `${fmtMm(result.airPortMm)} mm`, "airPortMm"],
+        ["进气口轴线位置", `${fmtMm(result.airPortOffsetMm)} mm`, "airPortOffsetMm"],
+        ["进气位置效率", `${fmt(result.airPortEfficiency * 100)}%`, "airPortOffsetMm"],
+        ["喉部雷诺数", `${fmt(result.reynolds, 0)}`, "reynolds"]
+      ], advice);
+
+      document.getElementById("flowMetrics").innerHTML = metricHtml([
+        ["喉部绝压", fmtPressure(result.throatAbs, "abs")],
+        ["混合段绝压", fmtPressure(result.mixedAbs, "abs")],
+        ["喉部速度", `${fmt(result.vTh)} m/s`],
+        ["出口速度", `${fmt(result.vOut)} m/s`],
+        ["出口可用表压", fmtPressure(result.availableGaugeKpa, "gauge")],
+        ["估算总压损", fmtPressure(result.pressureLossKpa, "delta")],
+        ["实际进气量", `${fmt(result.airFlowLpm)} L/min`],
+        ["气水比 / 含气率", `${fmt(result.gasRatio)} / ${fmt(result.voidFraction * 100)}%`]
+      ]);
+
+      const risks = [];
+      if (result.reverse) risks.push(["bad", "高背压或混合段压力已高于空气入口压力，进气口存在倒灌/逆流风险。"]);
+      else if (!result.suction) risks.push(["warn", "喉部或混合段压力未低于大气压，当前参数无法形成稳定吸气。"]);
+      else risks.push(["good", "喉部压力低于空气入口压力，当前条件下可以形成吸气。"]);
+      if (!result.backOk) risks.push(["bad", `出口可用表压 ${fmtPressure(result.availableGaugeKpa, "gauge")} 低于设定背压 ${fmtPressure(state.values.backGaugeKpa, "gauge")}，出口流动不成立。`]);
+      if (result.cavitationMarginKpa < model.cavitationBadKpa) risks.push(["bad", `喉部压力接近水蒸气压，空化裕度仅 ${fmtPressure(result.cavitationMarginKpa, "delta")}。`]);
+      else if (result.cavitationMarginKpa < model.cavitationWarnKpa) risks.push(["warn", `喉部空化裕度 ${fmtPressure(result.cavitationMarginKpa, "delta")}，建议增大喉径或降低入口流速。`]);
+      if (result.airChoked) risks.push(["warn", "空气入口可能达到临界流，进气量对下游压力变化不再线性。"]);
+      if (result.airPortEfficiency < 0.82) risks.push(["warn", `进气口轴线偏离低压核心，位置效率约 ${fmt(result.airPortEfficiency * 100)}%，实际吸气能力会下降。`]);
+      if (result.gasRatio > model.gasRatioWarn) risks.push(["warn", "气水比偏高，简化两相模型误差会明显增大，建议样机标定。"]);
+      if (statusClass === "good") risks.push(["good", "推荐几何参数满足当前工程初选边界，可进入样机尺寸细化。"]);
+      document.getElementById("riskList").innerHTML = risks.map(([cls, text]) => `<div class="risk ${cls}">${text}</div>`).join("");
+    }
+
+    function renderTargetSolution(solution) {
+      const hero = document.getElementById("solutionHero");
+      const metrics = document.getElementById("targetSolutionMetrics");
+      const risks = document.getElementById("targetRiskList");
+      const applyButton = document.getElementById("applyTargetSolution");
+      const viewButton = document.getElementById("viewTargetInSim");
+      const stepButton = document.getElementById("downloadTargetStep");
+      const mdButton = document.getElementById("downloadTargetMarkdown");
+      const manualButton = document.getElementById("copyTargetToManual");
+      if (!solution.ok) {
+        targetSolution = null;
+        applyButton.disabled = true;
+        viewButton.disabled = true;
+        stepButton.disabled = true;
+        mdButton.disabled = true;
+        manualButton.disabled = true;
+        hero.innerHTML = [
+          ["搜索状态", "未找到可进气方案", "bad"],
+          ["已测试组合", `${solution.tested}`, "warn"],
+          ["建议", "提高入口压力或放宽孔径", "warn"]
+        ].map(([label, value, cls]) => `
+          <div class="status-card ${cls}">
+            <div class="status-label">${label}</div>
+            <div class="status-value">${value}</div>
+          </div>
+        `).join("");
+        metrics.innerHTML = "";
+        risks.innerHTML = [
+          `<div class="risk bad">在最高入口压力 ${fmtPressure(solution.maxInlet, "gauge")}、最大进气口 ${fmtMm(solution.maxAirPort)} mm 的限制下，没有找到同时满足可吸气、无逆流、背压可克服和空化裕度的组合。</div>`,
+          `<div class="risk warn">可以尝试降低出口背压、降低目标进气量、增大最大外径或允许更高入口压力。</div>`
+        ].join("");
+        drawEmptyTargetCanvas("未找到可进气方案");
+        return;
+      }
+      targetSolution = solution.result;
+      applyButton.disabled = false;
+      viewButton.disabled = false;
+      stepButton.disabled = false;
+      mdButton.disabled = false;
+      manualButton.disabled = false;
+      const result = solution.result;
+      hero.innerHTML = [
+        ["搜索状态", "找到可进气方案", "good"],
+        ["推荐入口压力", fmtPressure(result.inletGaugeKpa, "gauge"), "good"],
+        ["推荐进气孔", `${fmtMm(result.airPortMm)} mm`, "good"]
+      ].map(([label, value, cls]) => `
+        <div class="status-card ${cls}">
+          <div class="status-label">${label}</div>
+          <div class="status-value">${value}</div>
+        </div>
+      `).join("");
+      const targetAdvice = geometryAdvice(result);
+      metrics.innerHTML = metricHtml([
+        ["目标进水量", `${fmt(result.targetWater)} L/min`],
+        ["目标进气量", `${fmt(result.targetAir)} L/min`],
+        ["期望进水口直径", `${fmtMm(result.targetInletMm)} mm`],
+        ["进水口偏差", `${fmtMm(result.inletMm - result.targetInletMm)} mm`],
+        ["出口背压", fmtPressure(result.targetBack, "gauge")],
+        ["入口段直径", `${fmtMm(result.inletMm)} mm`, "inletMm"],
+        ["喉径", `${fmtMm(result.throatMm)} mm`, "throatMm"],
+        ["出口段直径", `${fmtMm(result.outletMm)} mm`, "outletMm"],
+        ["收缩半角", `${fmt(result.contractionDeg, 1)} deg`, "contractionDeg"],
+        ["扩散半角", `${fmt(result.diffuserDeg, 1)} deg`, "diffuserDeg"],
+        ["空气入口等效直径", `${fmtMm(result.airPortMm)} mm`, "airPortMm"],
+        ["进气口轴线位置", `${fmtMm(result.airPortOffsetMm)} mm`, "airPortOffsetMm"],
+        ["进气位置效率", `${fmt(result.airPortEfficiency * 100)}%`, "airPortOffsetMm"],
+        ["喉部绝压", fmtPressure(result.throatAbs, "abs")],
+        ["出口可用表压", fmtPressure(result.availableGaugeKpa, "gauge")],
+        ["空化裕度", fmtPressure(result.cavitationMarginKpa, "delta")],
+        ["气水比", `${fmt(result.gasRatio)}`],
+        ["搜索组合数", `${solution.tested}`]
+      ], targetAdvice);
+      const targetRisks = [
+        ["good", "该组合满足可吸气、无进气口逆流、出口背压可克服的筛选条件。"],
+        ["good", `推荐入口压力为 ${fmtPressure(result.inletGaugeKpa, "gauge")}，喉径 ${fmtMm(result.throatMm)} mm，空气入口等效直径 ${fmtMm(result.airPortMm)} mm。`]
+      ];
+      if (result.cavitationMarginKpa < 16) targetRisks.push(["warn", `空化裕度 ${fmtPressure(result.cavitationMarginKpa, "delta")}，虽然通过筛选，但建议样机验证。`]);
+      if (result.airChoked) targetRisks.push(["warn", "空气入口可能接近临界流，实际进气量需要用实验流量系数修正。"]);
+      if (result.airPortEfficiency < 0.82) targetRisks.push(["warn", `进气口轴线位置效率约 ${fmt(result.airPortEfficiency * 100)}%，建议靠近喉部低压核心做样机对比。`]);
+      risks.innerHTML = targetRisks.map(([cls, text]) => `<div class="risk ${cls}">${text}</div>`).join("");
+      drawTargetPipe(result);
+    }
+
+    function renderManualResult(result) {
+      const model = getModelConfig();
+      const suctionText = result.reverse ? "进气口逆流" : result.suction ? "可吸气" : "无法吸气";
+      const backText = result.backOk ? "背压可克服" : "背压过高";
+      const cavText = result.cavitationMarginKpa < model.cavitationBadKpa ? "空化风险高" : result.cavitationMarginKpa < model.cavitationWarnKpa ? "接近空化" : "空化裕度足";
+      const mixText = result.gasRatio > model.gasRatioWarn ? "气水比过高" : result.gasRatio > model.gasRatioHigh ? "高含气混合" : "常规混合";
+      document.getElementById("manualStatusStrip").innerHTML = [
+        ["吸气状态", suctionText, result.reverse ? "bad" : result.suction ? "good" : "warn"],
+        ["出口背压", backText, result.backOk ? "good" : "bad"],
+        ["空化判断", cavText, result.cavitationMarginKpa < model.cavitationBadKpa ? "bad" : result.cavitationMarginKpa < model.cavitationWarnKpa ? "warn" : "good"],
+        ["混合强度", mixText, result.gasRatio > model.gasRatioWarn ? "warn" : "good"]
+      ].map(([label, value, cls]) => statusCardHtml(label, value, cls, result)).join("");
+      const manualAdvice = geometryAdvice(result);
+      document.getElementById("manualGeometryMetrics").innerHTML = metricHtml([
+        ["入口段直径", `${fmtMm(result.inletMm)} mm`, "inletMm"],
+        ["喉径", `${fmtMm(result.throatMm)} mm`, "throatMm"],
+        ["出口段直径", `${fmtMm(result.outletMm)} mm`, "outletMm"],
+        ["收缩半角", `${fmt(result.contractionDeg, 1)} deg`, "contractionDeg"],
+        ["扩散半角", `${fmt(result.diffuserDeg, 1)} deg`, "diffuserDeg"],
+        ["喉部长度", `${fmtMm(result.throatLengthMm)} mm`, "throatLengthMm"],
+        ["空气入口等效直径", `${fmtMm(result.airPortMm)} mm`, "airPortMm"],
+        ["进气口轴线位置", `${fmtMm(result.airPortOffsetMm)} mm`, "airPortOffsetMm"],
+        ["进气位置效率", `${fmt(result.airPortEfficiency * 100)}%`, "airPortOffsetMm"],
+        ["喉部雷诺数", `${fmt(result.reynolds, 0)}`, "reynolds"]
+      ], manualAdvice);
+      document.getElementById("manualFlowMetrics").innerHTML = metricHtml([
+        ["喉部绝压", fmtPressure(result.throatAbs, "abs")],
+        ["混合段绝压", fmtPressure(result.mixedAbs, "abs")],
+        ["喉部速度", `${fmt(result.vTh)} m/s`],
+        ["出口速度", `${fmt(result.vOut)} m/s`],
+        ["出口可用表压", fmtPressure(result.availableGaugeKpa, "gauge")],
+        ["估算总压损", fmtPressure(result.pressureLossKpa, "delta")],
+        ["实际进气量", `${fmt(result.airFlowLpm)} L/min`],
+        ["气水比 / 含气率", `${fmt(result.gasRatio)} / ${fmt(result.voidFraction * 100)}%`]
+      ]);
+      const risks = [];
+      if (result.reverse) risks.push(["bad", "手动参数下混合段压力高于空气入口压力，存在进气口倒灌/逆流风险。"]);
+      else if (!result.suction) risks.push(["warn", "手动参数下喉部或混合段压力不足以形成稳定吸气。"]);
+      else risks.push(["good", "手动参数下可形成吸气。"]);
+      if (!result.backOk) risks.push(["bad", `出口可用表压 ${fmtPressure(result.availableGaugeKpa, "gauge")} 低于设定背压 ${fmtPressure(state.manualValues.backGaugeKpa, "gauge")}。`]);
+      if (result.cavitationMarginKpa < model.cavitationBadKpa) risks.push(["bad", `空化裕度仅 ${fmtPressure(result.cavitationMarginKpa, "delta")}，低于当前模型安全线。`]);
+      else if (result.cavitationMarginKpa < model.cavitationWarnKpa) risks.push(["warn", `空化裕度 ${fmtPressure(result.cavitationMarginKpa, "delta")}，建议提高裕度。`]);
+      if (result.airPortEfficiency < 0.82) risks.push(["warn", `进气口轴线位置效率约 ${fmt(result.airPortEfficiency * 100)}%，偏离喉部会浪费负压。`]);
+      if (result.gasRatio > model.gasRatioWarn) risks.push(["warn", "气水比超过当前模型建议范围，简化模型误差会增大。"]);
+      risks.push(["good", `当前使用模型：${model.label}。手动输入角度已直接参与损失计算。`]);
+      document.getElementById("manualRiskList").innerHTML = risks.map(([cls, text]) => `<div class="risk ${cls}">${text}</div>`).join("");
+      applyManualAdvice(result);
+      drawManualPipe(result);
+      drawManualJet(result);
+    }
+
+    function updateManual() {
+      manualResult = evaluateManualGeometry({ ...state.manualValues, modelKey: state.modelKey });
+      renderManualResult(manualResult);
+      if (deepResult) updateDeep();
+    }
+
+    function buildVenturiProfile(result) {
+      const lengths = venturiLengths(result);
+      const breaks = {
+        inletEnd: lengths.inletStraight,
+        contractionEnd: lengths.inletStraight + lengths.contractionLen,
+        throatEnd: lengths.inletStraight + lengths.contractionLen + lengths.throatLen,
+        diffuserEnd: lengths.inletStraight + lengths.contractionLen + lengths.throatLen + lengths.diffuserLen,
+        total: lengths.total
+      };
+      const diameterAt = (x) => {
+        if (x <= breaks.inletEnd) return result.inletMm;
+        if (x <= breaks.contractionEnd) {
+          const t = (x - breaks.inletEnd) / Math.max(1e-6, lengths.contractionLen);
+          return result.inletMm + (result.throatMm - result.inletMm) * t;
+        }
+        if (x <= breaks.throatEnd) return result.throatMm;
+        if (x <= breaks.diffuserEnd) {
+          const t = (x - breaks.throatEnd) / Math.max(1e-6, lengths.diffuserLen);
+          return result.throatMm + (result.outletMm - result.throatMm) * t;
+        }
+        return result.outletMm;
+      };
+      const segmentAt = (x) => {
+        if (x <= breaks.inletEnd) return "入口段";
+        if (x <= breaks.contractionEnd) return "收缩段";
+        if (x <= breaks.throatEnd) return "喉部/混合段";
+        if (x <= breaks.diffuserEnd) return "扩散段";
+        return "出口段";
+      };
+      return { lengths, breaks, diameterAt, segmentAt };
+    }
+
+    function pressureAtProfileX(x, profile, input, base) {
+      const pIn = input.atmKpa + input.inletGaugeKpa;
+      const pTh = base.throatAbs;
+      const pMix = base.mixedAbs;
+      const pOut = base.outletAbsFree;
+      const b = profile.breaks;
+      if (x <= b.inletEnd) {
+        const t = x / Math.max(1e-6, b.inletEnd);
+        return pIn + (pIn - Math.max(pIn - 0.08 * (pIn - pTh), pTh)) * -t;
+      }
+      if (x <= b.contractionEnd) {
+        const start = Math.max(pIn - 0.08 * (pIn - pTh), pTh);
+        const t = (x - b.inletEnd) / Math.max(1e-6, b.contractionEnd - b.inletEnd);
+        return start + (pTh - start) * t;
+      }
+      if (x <= b.throatEnd) {
+        const t = (x - b.contractionEnd) / Math.max(1e-6, b.throatEnd - b.contractionEnd);
+        return pTh + (pMix - pTh) * t;
+      }
+      if (x <= b.diffuserEnd) {
+        const t = (x - b.throatEnd) / Math.max(1e-6, b.diffuserEnd - b.throatEnd);
+        return pMix + (pOut - pMix) * t;
+      }
+      const t = (x - b.diffuserEnd) / Math.max(1e-6, b.total - b.diffuserEnd);
+      const backAbs = input.atmKpa + input.backGaugeKpa;
+      const endPressure = base.backOk ? pOut : Math.max(pOut, backAbs - base.backPenalty * 0.25);
+      return pOut + (endPressure - pOut) * t;
+    }
+
+    function evaluateDeepProfile(input, geometry, options) {
+      const base = evaluateManualGeometry({ ...input, ...geometry, modelKey: state.modelKey });
+      const profile = buildVenturiProfile(base);
+      const model = getModelConfig();
+      const nodeCount = Math.round(clamp(Number(options.nodeCount), 8, 96));
+      const slipRatio = clamp(Number(options.slipRatio), 0.2, 5);
+      const waterLpm = Math.max(0, input.waterFlowLpm);
+      const waterQ = waterLpm / 60000;
+      const vaporKpa = waterVaporPressureKpa(input.waterTempC);
+      const rhoWater = waterDensity(input.waterTempC);
+      const airBaseLpm = Math.max(0, base.airFlowLpm || input.airFlowLpm || 0);
+      const nodes = [];
+      for (let i = 0; i < nodeCount; i++) {
+        const ratio = nodeCount === 1 ? 0 : i / (nodeCount - 1);
+        const xMm = ratio * profile.breaks.total;
+        const diameterMm = profile.diameterAt(xMm);
+        const area = areaFromDiameterMm(diameterMm);
+        const pressureAbsKpa = Math.max(1, pressureAtProfileX(xMm, profile, input, base));
+        const airFlowLpm = options.useAirExpansion
+          ? airBaseLpm * input.atmKpa / Math.max(5, pressureAbsKpa)
+          : airBaseLpm;
+        const effectiveAirLpm = airFlowLpm / slipRatio;
+        const voidFraction = clamp(effectiveAirLpm / Math.max(0.0001, waterLpm + effectiveAirLpm), 0, 0.98);
+        const rhoAir = airDensity(pressureAbsKpa, input.airTempC);
+        const rhoMix = options.useTwoPhaseDensity
+          ? voidFraction * rhoAir + (1 - voidFraction) * rhoWater
+          : rhoWater;
+        const mixtureQ = options.useTwoPhaseDensity
+          ? (waterLpm + airFlowLpm) / 60000
+          : waterQ;
+        const velocity = mixtureQ / Math.max(1e-9, area);
+        nodes.push({
+          index: i + 1,
+          xMm,
+          xRatio: ratio,
+          segment: profile.segmentAt(xMm),
+          diameterMm,
+          velocity,
+          pressureAbsKpa,
+          gaugeKpa: pressureAbsKpa - input.atmKpa,
+          airFlowLpm,
+          voidFraction,
+          rhoMix,
+          cavitationMarginKpa: pressureAbsKpa - vaporKpa
+        });
+      }
+      const minPressureNode = nodes.reduce((best, node) => node.pressureAbsKpa < best.pressureAbsKpa ? node : best, nodes[0]);
+      const minCavitationNode = nodes.reduce((best, node) => node.cavitationMarginKpa < best.cavitationMarginKpa ? node : best, nodes[0]);
+      const maxVoidNode = nodes.reduce((best, node) => node.voidFraction > best.voidFraction ? node : best, nodes[0]);
+      const outletNode = nodes[nodes.length - 1];
+      const risks = [];
+      if (minCavitationNode.cavitationMarginKpa < model.cavitationBadKpa) risks.push(["bad", `节点 ${minCavitationNode.index}（${minCavitationNode.segment}）空化裕度仅 ${fmtPressure(minCavitationNode.cavitationMarginKpa, "delta")}，风险高。`]);
+      else if (minCavitationNode.cavitationMarginKpa < model.cavitationWarnKpa) risks.push(["warn", `节点 ${minCavitationNode.index}（${minCavitationNode.segment}）空化裕度 ${fmtPressure(minCavitationNode.cavitationMarginKpa, "delta")}，接近当前模型警戒线。`]);
+      if (!base.backOk) risks.push(["bad", `出口可用压力低于背压，深度模型继承背压失败状态，差值约 ${fmtPressure(base.backPenalty, "delta")}。`]);
+      if (base.reverse) risks.push(["bad", "混合段压力高于空气入口压力，存在进气口逆流风险。"]);
+      else if (!base.suction) risks.push(["warn", "喉部/混合段压力不足以稳定吸气，空气节点流量按 0 或低值处理。"]);
+      if (base.diffuserDeg > model.diffuserMax || base.diffuserDeg > 7.5) risks.push(["warn", `扩散半角 ${fmt(base.diffuserDeg, 1)} deg 偏大，扩散段分离和压恢复不足风险升高。`]);
+      if (maxVoidNode.voidFraction > model.gasRatioHigh) risks.push(["warn", `最大含气率 ${fmt(maxVoidNode.voidFraction * 100)}%，两相简化误差会增大。`]);
+      if (options.bubbleDiameterMm > 3) risks.push(["warn", `气泡平均直径 ${fmtMm(options.bubbleDiameterMm)} mm 偏大，实际混合和传质效果可能弱于估算。`]);
+      if (!risks.length) risks.push(["good", "多节点校核未触发背压、逆流、空化或高含气率风险。"]);
+      return {
+        base,
+        input: { ...input },
+        options: { ...options, nodeCount, slipRatio },
+        profile,
+        nodes,
+        summary: {
+          minPressureNode,
+          minCavitationNode,
+          maxVoidNode,
+          outletNode,
+          outletAvailableGaugeKpa: base.availableGaugeKpa
+        },
+        risks
+      };
+    }
+
+    function drawDeepCurves(result) {
+      const canvas = document.getElementById("deepCurveCanvas");
+      const { ctx, w, h } = resizeCanvas(canvas);
+      ctx.clearRect(0, 0, w, h);
+      ctx.fillStyle = "#0b0e11";
+      ctx.fillRect(0, 0, w, h);
+      const pad = { l: 46, r: 20, t: 20, b: 34 };
+      const plotW = Math.max(1, w - pad.l - pad.r);
+      const plotH = Math.max(1, h - pad.t - pad.b);
+      ctx.strokeStyle = "rgba(234,236,239,0.16)";
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 4; i++) {
+        const y = pad.t + plotH * i / 4;
+        ctx.beginPath();
+        ctx.moveTo(pad.l, y);
+        ctx.lineTo(w - pad.r, y);
+        ctx.stroke();
+      }
+      const series = [
+        { key: "pressureAbsKpa", color: "#fcd535", label: "压力", values: result.nodes.map((n) => n.pressureAbsKpa) },
+        { key: "velocity", color: "#0ecb81", label: "速度", values: result.nodes.map((n) => n.velocity) },
+        { key: "voidFraction", color: "#f6465d", label: "含气率", values: result.nodes.map((n) => n.voidFraction * 100) }
+      ];
+      series.forEach((s) => {
+        const min = Math.min(...s.values);
+        const max = Math.max(...s.values);
+        const span = Math.max(1e-6, max - min);
+        ctx.strokeStyle = s.color;
+        ctx.lineWidth = 2.2;
+        ctx.beginPath();
+        result.nodes.forEach((node, index) => {
+          const x = pad.l + node.xRatio * plotW;
+          const y = pad.t + (1 - (s.values[index] - min) / span) * plotH;
+          if (index === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+      });
+      ctx.fillStyle = "#929aa5";
+      ctx.font = "12px sans-serif";
+      ctx.fillText("入口", pad.l, h - 12);
+      ctx.textAlign = "right";
+      ctx.fillText("出口", w - pad.r, h - 12);
+      ctx.textAlign = "left";
+      series.forEach((s, i) => {
+        ctx.fillStyle = s.color;
+        ctx.fillRect(pad.l + i * 90, 8, 18, 4);
+        ctx.fillStyle = "#eaecef";
+        ctx.fillText(s.label, pad.l + i * 90 + 24, 13);
+      });
+      ctx.textAlign = "left";
+    }
+
+    function renderDeepResult(result) {
+      const model = getModelConfig();
+      const minP = result.summary.minPressureNode;
+      const minCav = result.summary.minCavitationNode;
+      const maxVoid = result.summary.maxVoidNode;
+      const outlet = result.summary.outletNode;
+      const cavClass = minCav.cavitationMarginKpa < model.cavitationBadKpa ? "bad" : minCav.cavitationMarginKpa < model.cavitationWarnKpa ? "warn" : "good";
+      document.getElementById("deepStatusStrip").innerHTML = [
+        ["最低压力", `${fmtPressure(minP.pressureAbsKpa, "abs")} · 节点${minP.index}`, minP.pressureAbsKpa < result.base.vaporKpa + model.cavitationWarnKpa ? "warn" : "good"],
+        ["最低空化裕度", `${fmtPressure(minCav.cavitationMarginKpa, "delta")} · 节点${minCav.index}`, cavClass],
+        ["最大含气率", `${fmt(maxVoid.voidFraction * 100)}% · 节点${maxVoid.index}`, maxVoid.voidFraction > model.gasRatioHigh ? "warn" : "good"],
+        ["出口可用压力", fmtPressure(result.base.availableGaugeKpa, "gauge"), result.base.backOk ? "good" : "bad"]
+      ].map(([label, value, cls]) => `
+        <div class="status-card ${cls}">
+          <div class="status-label">${label}</div>
+          <div class="status-value">${value}</div>
+        </div>
+      `).join("");
+      document.getElementById("deepProfileMetrics").innerHTML = metricHtml([
+        ["总长度", `${fmt(result.profile.lengths.total)} mm`],
+        ["节点数", `${result.options.nodeCount}`],
+        ["滑移比", `${fmt(result.options.slipRatio)}`],
+        ["气泡平均直径", `${fmtMm(result.options.bubbleDiameterMm)} mm`],
+        ["空气膨胀修正", result.options.useAirExpansion ? "开启" : "关闭"],
+        ["两相密度修正", result.options.useTwoPhaseDensity ? "开启" : "关闭"],
+        ["进气口轴线位置", `${fmtMm(result.base.airPortOffsetMm)} mm`],
+        ["进气位置效率", `${fmt(result.base.airPortEfficiency * 100)}%`],
+        ["出口节点表压", fmtPressure(outlet.gaugeKpa, "gauge")],
+        ["实际进气量", `${fmt(result.base.airFlowLpm)} L/min`]
+      ]);
+      document.getElementById("deepTableBody").innerHTML = result.nodes.map((node) => `
+        <tr>
+          <td>${fmtMm(node.xMm)} mm</td>
+          <td>${node.segment}</td>
+          <td>${fmtMm(node.diameterMm)}</td>
+          <td>${fmt(node.velocity)}</td>
+          <td>${fmtPressure(node.pressureAbsKpa, "abs")}</td>
+          <td>${fmt(node.airFlowLpm)}</td>
+          <td>${fmt(node.voidFraction * 100)}</td>
+          <td>${fmt(node.rhoMix)}</td>
+          <td>${fmtPressure(node.cavitationMarginKpa, "delta")}</td>
+        </tr>
+      `).join("");
+      document.getElementById("deepRiskList").innerHTML = result.risks.map(([cls, text]) => `<div class="risk ${cls}">${text}</div>`).join("");
+      drawDeepCurves(result);
+    }
+
+    function syncDeepControlsFromState() {
+      document.getElementById("deepNodeCount").value = inputDisplay(state.deepValues.nodeCount);
+      document.getElementById("deepSlipRatio").value = inputDisplay(state.deepValues.slipRatio);
+      document.getElementById("deepBubbleDiameter").value = inputDisplay(state.deepValues.bubbleDiameterMm);
+      document.getElementById("deepUseAirExpansion").checked = state.deepValues.useAirExpansion;
+      document.getElementById("deepUseTwoPhaseDensity").checked = state.deepValues.useTwoPhaseDensity;
+    }
+
+    function readDeepControls() {
+      state.deepValues.nodeCount = clamp(Number(document.getElementById("deepNodeCount").value), 8, 96);
+      state.deepValues.slipRatio = clamp(Number(document.getElementById("deepSlipRatio").value), 0.2, 5);
+      state.deepValues.bubbleDiameterMm = clamp(Number(document.getElementById("deepBubbleDiameter").value), 0.05, 12);
+      state.deepValues.useAirExpansion = document.getElementById("deepUseAirExpansion").checked;
+      state.deepValues.useTwoPhaseDensity = document.getElementById("deepUseTwoPhaseDensity").checked;
+    }
+
+    function updateDeep() {
+      readDeepControls();
+      const input = { ...state.manualValues, modelKey: state.modelKey };
+      const geometry = { ...state.manualValues };
+      deepResult = evaluateDeepProfile(input, geometry, state.deepValues);
+      renderDeepResult(deepResult);
+    }
+
+    function resizeCanvas(canvas) {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      const width = Math.max(320, Math.floor(rect.width * dpr));
+      const height = Math.max(240, Math.floor(rect.height * dpr));
+      if (canvas.width !== width || canvas.height !== height) {
+        canvas.width = width;
+        canvas.height = height;
+      }
+      const ctx = canvas.getContext("2d");
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      return { ctx, w: rect.width, h: rect.height };
+    }
+
+    function drawArrow(ctx, x1, y1, x2, y2, color, width = 2) {
+      const angle = Math.atan2(y2 - y1, x2 - x1);
+      ctx.strokeStyle = color;
+      ctx.fillStyle = color;
+      ctx.lineWidth = width;
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(x2, y2);
+      ctx.lineTo(x2 - 9 * Math.cos(angle - Math.PI / 6), y2 - 9 * Math.sin(angle - Math.PI / 6));
+      ctx.lineTo(x2 - 9 * Math.cos(angle + Math.PI / 6), y2 - 9 * Math.sin(angle + Math.PI / 6));
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    function labelBox(ctx, text, x, y, align = "center") {
+      ctx.save();
+      ctx.font = "700 11px sans-serif";
+      const paddingX = 6;
+      const width = ctx.measureText(text).width + paddingX * 2;
+      const height = 19;
+      let left = align === "left" ? x : align === "right" ? x - width : x - width / 2;
+      ctx.fillStyle = "rgba(255,255,255,0.92)";
+      ctx.strokeStyle = "rgba(85,99,113,0.25)";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.roundRect(left, y - height + 4, width, height, 5);
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = "#2d3a45";
+      ctx.textAlign = align;
+      ctx.textBaseline = "middle";
+      ctx.fillText(text, x, y - 5);
+      ctx.restore();
+    }
+
+    function drawLinearDimension(ctx, x1, x2, y, text) {
+      const tick = 7;
+      ctx.save();
+      ctx.strokeStyle = "#657383";
+      ctx.fillStyle = "#657383";
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.moveTo(x1, y - tick);
+      ctx.lineTo(x1, y + tick);
+      ctx.moveTo(x2, y - tick);
+      ctx.lineTo(x2, y + tick);
+      ctx.moveTo(x1, y);
+      ctx.lineTo(x2, y);
+      ctx.stroke();
+      drawArrow(ctx, x1 + 4, y, x1 + 18, y, "#657383", 1);
+      drawArrow(ctx, x2 - 4, y, x2 - 18, y, "#657383", 1);
+      labelBox(ctx, text, (x1 + x2) / 2, y - 8);
+      ctx.restore();
+    }
+
+    function drawVerticalDimension(ctx, x, y1, y2, text, align = "left") {
+      const tick = 7;
+      ctx.save();
+      ctx.strokeStyle = "#657383";
+      ctx.fillStyle = "#657383";
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.moveTo(x - tick, y1);
+      ctx.lineTo(x + tick, y1);
+      ctx.moveTo(x - tick, y2);
+      ctx.lineTo(x + tick, y2);
+      ctx.moveTo(x, y1);
+      ctx.lineTo(x, y2);
+      ctx.stroke();
+      drawArrow(ctx, x, y1 + 3, x, y1 + 17, "#657383", 1);
+      drawArrow(ctx, x, y2 - 3, x, y2 - 17, "#657383", 1);
+      labelBox(ctx, text, align === "left" ? x + 10 : x - 10, (y1 + y2) / 2 + 6, align);
+      ctx.restore();
+    }
+
+    function drawAngleCallout(ctx, x, y, text, side = "left") {
+      ctx.save();
+      ctx.strokeStyle = "#657383";
+      ctx.lineWidth = 1.2;
+      const dir = side === "left" ? -1 : 1;
+      ctx.beginPath();
+      ctx.arc(x, y, 24, side === "left" ? -0.22 : Math.PI + 0.22, side === "left" ? -0.72 : Math.PI + 0.72, side !== "left");
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + dir * 38, y);
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + dir * 30, y - 23);
+      ctx.stroke();
+      labelBox(ctx, text, x + dir * 60, y - 18, side === "left" ? "right" : "left");
+      ctx.restore();
+    }
+
+    function drawPipe(result) {
+      const canvas = document.getElementById("pipeCanvas");
+      const { ctx, w, h } = resizeCanvas(canvas);
+      ctx.clearRect(0, 0, w, h);
+      const cx = w / 2;
+      const cy = h * 0.52;
+      const left = 42;
+      const right = w - 42;
+      const inletX = left;
+      const throatX1 = w * 0.42;
+      const throatX2 = w * 0.55;
+      const outletX = right;
+      const scale = Math.min(5, Math.max(1.6, h / Math.max(12, result.inletMm * 5)));
+      const rIn = result.inletMm * scale / 2;
+      const rTh = result.throatMm * scale / 2;
+      const rOut = result.outletMm * scale / 2;
+      const top = [
+        [inletX, cy - rIn],
+        [w * 0.28, cy - rIn],
+        [throatX1, cy - rTh],
+        [throatX2, cy - rTh],
+        [w * 0.74, cy - rOut],
+        [outletX, cy - rOut]
+      ];
+      const bottom = top.map(([x, y]) => [x, cy + (cy - y)]).reverse();
+      const pressureNorm = clamp((result.throatAbs - result.vaporKpa) / Math.max(20, state.values.atmKpa + state.values.inletGaugeKpa), 0, 1);
+      const throatColor = result.reverse ? "#ffd4d2" : pressureNorm < 0.08 ? "#fff0c2" : "#dff2ff";
+      const grad = ctx.createLinearGradient(left, 0, right, 0);
+      grad.addColorStop(0, "#e8f7ef");
+      grad.addColorStop(0.43, throatColor);
+      grad.addColorStop(0.72, result.backOk ? "#edf7ff" : "#ffeceb");
+      grad.addColorStop(1, "#f8fbfd");
+      ctx.beginPath();
+      ctx.moveTo(top[0][0], top[0][1]);
+      top.slice(1).forEach(([x, y]) => ctx.lineTo(x, y));
+      bottom.forEach(([x, y]) => ctx.lineTo(x, y));
+      ctx.closePath();
+      ctx.fillStyle = grad;
+      ctx.fill();
+      ctx.strokeStyle = "#34495e";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      for (let i = 0; i < 5; i++) {
+        const y = cy - rIn * 0.55 + i * rIn * 0.28;
+        drawArrow(ctx, left - 25, y, left + 22, y, "#0077b6", 1.6);
+      }
+
+      const throatVisualLen = Math.max(1, throatX2 - throatX1);
+      const offsetRatio = clamp(result.airPortOffsetMm / Math.max(0.5, result.throatLengthMm), -0.9, 1.7);
+      const airX = clamp(throatX1 + offsetRatio * throatVisualLen, w * 0.30, w * 0.70);
+      ctx.strokeStyle = "#556371";
+      ctx.lineWidth = 7;
+      ctx.beginPath();
+      ctx.moveTo(airX, cy - rTh);
+      ctx.lineTo(airX, cy - rTh - 55);
+      ctx.stroke();
+      ctx.lineWidth = 2;
+      const airColor = result.reverse ? "#d64545" : result.suction ? "#22a06b" : "#d98b00";
+      if (result.reverse) {
+        drawArrow(ctx, airX, cy - rTh - 10, airX, cy - rTh - 54, airColor, 3);
+      } else {
+        drawArrow(ctx, airX, cy - rTh - 55, airX, cy - rTh - 9, airColor, 3);
+      }
+
+      const t = performance.now() / 1000;
+      for (let i = 0; i < 28; i++) {
+        const p = ((i / 28) + t * (0.12 + result.vTh * 0.003)) % 1;
+        const x = left + p * (right - left);
+        const tubeR = x < throatX1
+          ? rIn + (rTh - rIn) * clamp((x - w * 0.28) / Math.max(1, throatX1 - w * 0.28), 0, 1)
+          : x < throatX2
+            ? rTh
+            : rTh + (rOut - rTh) * clamp((x - throatX2) / Math.max(1, w * 0.74 - throatX2), 0, 1);
+        const y = cy + Math.sin(i * 1.7 + t * 2) * tubeR * 0.45;
+        ctx.fillStyle = result.reverse && x > throatX2 ? "rgba(214,69,69,0.5)" : "rgba(0,119,182,0.58)";
+        ctx.beginPath();
+        ctx.arc(x, y, 2.2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      const pPoints = [
+        [left, clamp(state.values.inletGaugeKpa / 800, 0, 1)],
+        [airX, clamp((result.throatAbs - state.values.atmKpa) / 800, -0.2, 1)],
+        [right, clamp(result.availableGaugeKpa / 800, -0.2, 1)]
+      ];
+      ctx.strokeStyle = "#d64545";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      pPoints.forEach(([x, n], idx) => {
+        const y = h - 34 - n * 70;
+        if (idx === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+      drawVerticalDimension(ctx, inletX + 24, cy - rIn, cy + rIn, `入口直径 ${fmtMm(result.inletMm)} mm`, "left");
+      drawVerticalDimension(ctx, airX - 24, cy - rTh, cy + rTh, `喉径 ${fmtMm(result.throatMm)} mm`, "right");
+      drawVerticalDimension(ctx, outletX - 24, cy - rOut, cy + rOut, `出口直径 ${fmtMm(result.outletMm)} mm`, "right");
+      drawLinearDimension(ctx, throatX1, throatX2, Math.max(24, cy - rIn - 54), `喉部长度 ${fmtMm(result.throatLengthMm)} mm`);
+      drawVerticalDimension(ctx, airX + 24, cy - rTh - 55, cy - rTh, `进气口 ${fmtMm(result.airPortMm)} mm`, "left");
+      drawLinearDimension(ctx, throatX1, airX, Math.max(42, cy - rIn - 32), `进气位置 ${fmtMm(result.airPortOffsetMm)} mm`);
+      drawAngleCallout(ctx, throatX1 - 8, cy - rTh - 4, `收缩半角 ${fmt(result.contractionDeg, 1)} deg`, "left");
+      drawAngleCallout(ctx, throatX2 + 8, cy - rTh - 4, `扩散半角 ${fmt(result.diffuserDeg, 1)} deg`, "right");
+      ctx.fillStyle = "#e5e5e5";
+      ctx.font = "12px sans-serif";
+      ctx.fillText(`喉部 ${fmtPressure(result.throatAbs, "abs")}`, airX - 62, cy + rIn + 36);
+      ctx.fillText(result.reverse ? "进气口逆流" : result.suction ? "空气吸入" : "吸气不足", airX + 10, cy - rTh - 36);
+    }
+
+    function drawTargetPipe(result) {
+      const previous = latest;
+      const canvas = document.getElementById("targetPipeCanvas");
+      const sourceCanvas = document.getElementById("pipeCanvas");
+      const originalId = sourceCanvas.id;
+      sourceCanvas.id = "pipeCanvasHidden";
+      canvas.id = "pipeCanvas";
+      drawPipe(result);
+      canvas.id = "targetPipeCanvas";
+      sourceCanvas.id = originalId;
+      latest = previous;
+    }
+
+    function drawManualPipe(result) {
+      const previous = latest;
+      const canvas = document.getElementById("manualPipeCanvas");
+      const sourceCanvas = document.getElementById("pipeCanvas");
+      const originalId = sourceCanvas.id;
+      sourceCanvas.id = "pipeCanvasHidden";
+      canvas.id = "pipeCanvas";
+      drawPipe(result);
+      canvas.id = "manualPipeCanvas";
+      sourceCanvas.id = originalId;
+      latest = previous;
+    }
+
+    function drawManualJet(result) {
+      const previous = latest;
+      const canvas = document.getElementById("manualJetCanvas");
+      const sourceCanvas = document.getElementById("jetCanvas");
+      const originalId = sourceCanvas.id;
+      sourceCanvas.id = "jetCanvasHidden";
+      canvas.id = "jetCanvas";
+      drawJet(result);
+      canvas.id = "manualJetCanvas";
+      sourceCanvas.id = originalId;
+      latest = previous;
+    }
+
+    function drawEmptyTargetCanvas(text) {
+      const canvas = document.getElementById("targetPipeCanvas");
+      const { ctx, w, h } = resizeCanvas(canvas);
+      ctx.clearRect(0, 0, w, h);
+      ctx.fillStyle = "#111111";
+      ctx.fillRect(0, 0, w, h);
+      ctx.fillStyle = "#a3a3a3";
+      ctx.font = "700 16px sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText(text, w / 2, h / 2);
+    }
+
+    function drawJet(result) {
+      const canvas = document.getElementById("jetCanvas");
+      const { ctx, w, h } = resizeCanvas(canvas);
+      ctx.clearRect(0, 0, w, h);
+      const startX = 54;
+      const cy = h / 2;
+      const nozzleR = clamp(result.outletMm * 1.4, 14, 34);
+      const feasible = result.backOk && !result.reverse;
+      const length = clamp((feasible ? 0.72 : 0.38) * w * (1 - clamp(state.values.backGaugeKpa / 650, 0, 0.55)), w * 0.2, w * 0.8);
+      const cone = clamp(0.15 + result.gasRatio * 0.18 + (feasible ? 0 : -0.06), 0.08, 0.38);
+      ctx.fillStyle = "#d7e1ea";
+      ctx.fillRect(16, cy - nozzleR, 42, nozzleR * 2);
+      ctx.fillStyle = "#697887";
+      ctx.fillRect(42, cy - nozzleR * 0.72, 18, nozzleR * 1.44);
+      const grad = ctx.createLinearGradient(startX, 0, startX + length, 0);
+      grad.addColorStop(0, feasible ? "rgba(0,119,182,0.34)" : "rgba(214,69,69,0.25)");
+      grad.addColorStop(1, "rgba(255,255,255,0)");
+      ctx.beginPath();
+      ctx.moveTo(startX, cy - nozzleR * 0.65);
+      ctx.lineTo(startX + length, cy - nozzleR - length * cone);
+      ctx.lineTo(startX + length, cy + nozzleR + length * cone);
+      ctx.lineTo(startX, cy + nozzleR * 0.65);
+      ctx.closePath();
+      ctx.fillStyle = grad;
+      ctx.fill();
+      const t = performance.now() / 1000;
+      const count = Math.floor(clamp(35 + result.voidFraction * 140, 28, 170));
+      for (let i = 0; i < count; i++) {
+        const seed = Math.sin((i + 1) * 999.37 + particleSeed) * 10000;
+        const rnd = seed - Math.floor(seed);
+        const speed = feasible ? 0.16 + result.vOut * 0.006 : 0.05;
+        const p = ((i / count) + t * speed + rnd * 0.1) % 1;
+        const spread = nozzleR * 0.45 + p * length * cone;
+        const x = startX + p * length;
+        const y = cy + (Math.sin(i * 2.41 + t * 2.2) * 0.55 + (rnd - 0.5) * 0.9) * spread;
+        const bubble = i % 3 === 0 || result.gasRatio > 0.35;
+        ctx.beginPath();
+        ctx.arc(x, y, bubble ? clamp(1.5 + result.gasRatio * 2.8 + rnd * 2, 1.3, 7) : 2, 0, Math.PI * 2);
+        ctx.fillStyle = bubble ? "rgba(255,255,255,0.82)" : "rgba(0,119,182,0.55)";
+        ctx.strokeStyle = feasible ? "rgba(0,119,182,0.28)" : "rgba(214,69,69,0.35)";
+        ctx.fill();
+        ctx.stroke();
+      }
+      if (!feasible) {
+        drawArrow(ctx, startX + 115, cy, startX + 30, cy, "#d64545", 4);
+        ctx.fillStyle = "#d64545";
+        ctx.font = "700 15px sans-serif";
+        ctx.fillText(result.reverse ? "高背压：进气口逆流" : "出口背压过高", startX + 135, cy - 16);
+      }
+      ctx.fillStyle = "#415161";
+      ctx.font = "12px sans-serif";
+      ctx.fillText(`气水比 ${fmt(result.gasRatio)} · 出口速度 ${fmt(result.vOut)} m/s`, 22, h - 20);
+    }
+
+    function venturiLengths(result) {
+      const contractionLen = Math.max(8, (result.inletMm - result.throatMm) / (2 * Math.tan(result.contractionDeg * Math.PI / 180)));
+      const throatLen = result.throatLengthMm;
+      const diffuserLen = Math.max(10, (result.outletMm - result.throatMm) / (2 * Math.tan(result.diffuserDeg * Math.PI / 180)));
+      const inletStraight = Math.max(8, result.inletMm * 0.8);
+      const outletStraight = Math.max(8, result.outletMm * 0.8);
+      const total = inletStraight + contractionLen + throatLen + diffuserLen + outletStraight;
+      return { inletStraight, contractionLen, throatLen, diffuserLen, outletStraight, total };
+    }
+
+    function buildVenturiMesh(result) {
+      const seg = 36;
+      const lengths = venturiLengths(result);
+      const outerR = Math.max(result.inletMm, result.outletMm) * 0.68 + 2;
+      const airR = Math.max(0.15, result.airPortMm / 2);
+      const airLen = outerR + airR * 5;
+      const x0 = -lengths.total / 2;
+      const stations = [
+        [x0, result.inletMm / 2],
+        [x0 + lengths.inletStraight, result.inletMm / 2],
+        [x0 + lengths.inletStraight + lengths.contractionLen, result.throatMm / 2],
+        [x0 + lengths.inletStraight + lengths.contractionLen + lengths.throatLen, result.throatMm / 2],
+        [x0 + lengths.inletStraight + lengths.contractionLen + lengths.throatLen + lengths.diffuserLen, result.outletMm / 2],
+        [x0 + lengths.total, result.outletMm / 2]
+      ];
+      const vertices = [];
+      const faces = [];
+      const addVertex = (p) => {
+        vertices.push(p);
+        return vertices.length - 1;
+      };
+      const outer = [];
+      const inner = [];
+      for (const [x, innerR] of stations) {
+        const outerRing = [];
+        const innerRing = [];
+        for (let i = 0; i < seg; i++) {
+          const a = i / seg * Math.PI * 2;
+          const y = Math.cos(a);
+          const z = Math.sin(a);
+          outerRing.push(addVertex([x, outerR * y, outerR * z]));
+          innerRing.push(addVertex([x, innerR * y, innerR * z]));
+        }
+        outer.push(outerRing);
+        inner.push(innerRing);
+      }
+      for (let s = 0; s < stations.length - 1; s++) {
+        for (let i = 0; i < seg; i++) {
+          const j = (i + 1) % seg;
+          faces.push([outer[s][i], outer[s][j], outer[s + 1][j], outer[s + 1][i]]);
+          faces.push([inner[s][j], inner[s][i], inner[s + 1][i], inner[s + 1][j]]);
+        }
+      }
+      for (let i = 0; i < seg; i++) {
+        const j = (i + 1) % seg;
+        faces.push([outer[0][j], outer[0][i], inner[0][i], inner[0][j]]);
+        const last = stations.length - 1;
+        faces.push([outer[last][i], outer[last][j], inner[last][j], inner[last][i]]);
+      }
+
+      const airStartY = result.throatMm / 2;
+      const airEndY = outerR + airLen;
+      const throatStartX = stations[2][0];
+      const airX = clamp(throatStartX + (result.airPortOffsetMm || 0), stations[1][0], stations[4][0]);
+      const airZ = 0;
+      const airA = [];
+      const airB = [];
+      for (let i = 0; i < seg; i++) {
+        const a = i / seg * Math.PI * 2;
+        const x = airX + Math.cos(a) * airR;
+        const z = airZ + Math.sin(a) * airR;
+        airA.push(addVertex([x, airStartY, z]));
+        airB.push(addVertex([x, airEndY, z]));
+      }
+      const capA = addVertex([airX, airStartY, airZ]);
+      const capB = addVertex([airX, airEndY, airZ]);
+      for (let i = 0; i < seg; i++) {
+        const j = (i + 1) % seg;
+        faces.push([airA[i], airA[j], airB[j], airB[i]]);
+        faces.push([capA, airA[i], airA[j]]);
+        faces.push([capB, airB[j], airB[i]]);
+      }
+      return { vertices, faces, lengths, outerR };
+    }
+
+    function stepString(value) {
+      return String(value).replace(/'/g, "''");
+    }
+
+    function createFacetedStep(result, label) {
+      const mesh = buildVenturiMesh(result);
+      let id = 1;
+      const lines = [];
+      const next = (text) => {
+        lines.push(`#${id}=${text};`);
+        return id++;
+      };
+      const vecSub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+      const cross = (a, b) => [
+        a[1] * b[2] - a[2] * b[1],
+        a[2] * b[0] - a[0] * b[2],
+        a[0] * b[1] - a[1] * b[0]
+      ];
+      const norm = (v) => {
+        const m = Math.hypot(v[0], v[1], v[2]) || 1;
+        return [v[0] / m, v[1] / m, v[2] / m];
+      };
+      const refDirection = (normal) => {
+        const base = Math.abs(normal[0]) < 0.8 ? [1, 0, 0] : [0, 1, 0];
+        return norm(cross(normal, cross(base, normal)));
+      };
+      const pointIds = mesh.vertices.map(([x, y, z]) => next(`CARTESIAN_POINT('',(${x.toFixed(6)},${y.toFixed(6)},${z.toFixed(6)}))`));
+      const faceIds = mesh.faces.map((face) => {
+        const p0 = mesh.vertices[face[0]];
+        const p1 = mesh.vertices[face[1]];
+        const p2 = mesh.vertices[face[2]];
+        const normal = norm(cross(vecSub(p1, p0), vecSub(p2, p0)));
+        const ref = refDirection(normal);
+        const origin = next(`CARTESIAN_POINT('',(${p0[0].toFixed(6)},${p0[1].toFixed(6)},${p0[2].toFixed(6)}))`);
+        const axis = next(`DIRECTION('',(${normal[0].toFixed(8)},${normal[1].toFixed(8)},${normal[2].toFixed(8)}))`);
+        const refDir = next(`DIRECTION('',(${ref[0].toFixed(8)},${ref[1].toFixed(8)},${ref[2].toFixed(8)}))`);
+        const place = next(`AXIS2_PLACEMENT_3D('',#${origin},#${axis},#${refDir})`);
+        const plane = next(`PLANE('',#${place})`);
+        const poly = next(`POLY_LOOP('',(${face.map((idx) => `#${pointIds[idx]}`).join(',')}))`);
+        const bound = next(`FACE_OUTER_BOUND('',#${poly},.T.)`);
+        return next(`FACE_SURFACE('',(#${bound}),#${plane},.T.)`);
+      });
+      const shell = next(`CLOSED_SHELL('',(${faceIds.map((fid) => `#${fid}`).join(',')}))`);
+      const brep = next(`FACETED_BREP('${stepString(label)}',#${shell})`);
+      const shape = next(`SHAPE_REPRESENTATION('${stepString(label)}',(#${brep}),#${id + 2})`);
+      const unit = next(`(LENGTH_UNIT()NAMED_UNIT(*)SI_UNIT(.MILLI.,.METRE.))`);
+      const context = next(`GEOMETRIC_REPRESENTATION_CONTEXT(3)GLOBAL_UNCERTAINTY_ASSIGNED_CONTEXT((#${id + 1}))GLOBAL_UNIT_ASSIGNED_CONTEXT((#${unit}))REPRESENTATION_CONTEXT('','')`);
+      const uncertainty = next(`UNCERTAINTY_MEASURE_WITH_UNIT(LENGTH_MEASURE(0.001),#${unit},'distance_accuracy_value','')`);
+      lines.splice(lines.findIndex((line) => line.startsWith(`#${shape}=`)), 1, `#${shape}=SHAPE_REPRESENTATION('${stepString(label)}',(#${brep}),#${context});`);
+      const comments = [
+        `/* Venturi parameters: inlet=${fmtMm(result.inletMm)}mm throat=${fmtMm(result.throatMm)}mm outlet=${fmtMm(result.outletMm)}mm */`,
+        `/* contraction=${fmt(result.contractionDeg, 1)}deg diffuser=${fmt(result.diffuserDeg, 1)}deg air_port=${fmtMm(result.airPortMm)}mm air_axis_offset=${fmtMm(result.airPortOffsetMm)}mm */`,
+        `/* This STEP is a faceted engineering preview generated in-browser. */`
+      ].join("\n");
+      return `ISO-10303-21;
+HEADER;
+FILE_DESCRIPTION(('Venturi faceted BREP generated by HTML tool'),'2;1');
+FILE_NAME('${stepString(label)}.stp','${new Date().toISOString()}',('Codex Venturi Tool'),(''),'','HTML generator','');
+FILE_SCHEMA(('CONFIG_CONTROL_DESIGN'));
+ENDSEC;
+DATA;
+${comments}
+${lines.join("\n")}
+ENDSEC;
+END-ISO-10303-21;
+`;
+    }
+
+    function downloadStep(result, label) {
+      if (!result) return;
+      const fileBase = `${label}_${new Date().toISOString().slice(0, 19).replace(/[-:T]/g, '')}`;
+      const blob = new Blob([createFacetedStep(result, fileBase)], { type: "model/step" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${fileBase}.stp`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function currentInputForResult(result, pageKind) {
+      if (pageKind === "manual") return { ...state.manualValues };
+      if (pageKind === "target") {
+        return {
+          ...state.values,
+          waterFlowLpm: result.targetWater,
+          airFlowLpm: result.targetAir,
+          inletGaugeKpa: result.inletGaugeKpa,
+          backGaugeKpa: result.targetBack,
+          airPortMm: result.airPortMm,
+          airPortOffsetMm: result.airPortOffsetMm,
+          modelKey: state.modelKey
+        };
+      }
+      return { ...state.values, modelKey: state.modelKey };
+    }
+
+    function mdTable(rows) {
+      return [
+        "| 项目 | 数值 |",
+        "|---|---|",
+        ...rows.map(([name, value]) => `| ${name} | ${value} |`)
+      ].join("\n");
+    }
+
+    function formulaMarkdown(keys) {
+      return keys.map((key, index) => {
+        const [name, expr, desc] = formulaCatalog[key];
+        return `${index + 1}. **${name}**：\`${expr}\`\n   ${desc}`;
+      }).join("\n");
+    }
+
+    function createCalculationMarkdown(result, pageKind, title) {
+      const input = currentInputForResult(result, pageKind);
+      const model = getModelConfig();
+      const lengths = venturiLengths(result);
+      const inletArea = areaFromDiameterMm(result.inletMm);
+      const throatArea = areaFromDiameterMm(result.throatMm);
+      const outletArea = areaFromDiameterMm(result.outletMm);
+      const vapor = waterVaporPressureKpa(input.waterTempC);
+      const formulaKeys = pageKind === "manual" ? pageFormulas.manual : pageKind === "target" ? pageFormulas.target : pageFormulas.sim;
+      const passText = result.reverse ? "进气口逆流" : result.suction ? "可吸气" : "无法吸气";
+      const backText = result.backOk ? "背压可克服" : "背压过高";
+      const cavText = result.cavitationMarginKpa < model.cavitationBadKpa ? "空化风险高" : result.cavitationMarginKpa < model.cavitationWarnKpa ? "接近空化" : "空化裕度足";
+      return `# ${title}计算步骤
+
+生成时间：${new Date().toLocaleString()}
+
+## 1. 应用模型
+
+${mdTable([
+  ["模型", model.label],
+  ["模型说明", model.description],
+  ["压力单位", pressureUnits[state.pressureUnit].delta],
+  ["用途", pageKind === "manual" ? "手动输入几何并校核状态" : pageKind === "target" ? "按目标水量/气量自动反算可吸气方案" : "按当前输入自动推荐几何参数"]
+])}
+
+## 2. 输入条件
+
+${mdTable([
+  ["进水量", `${fmt(input.waterFlowLpm)} L/min`],
+  ["目标/输入进气量", `${fmt(input.airFlowLpm)} L/min`],
+  ["入口压力", fmtPressure(input.inletGaugeKpa, "gauge")],
+  ["出口背压", fmtPressure(input.backGaugeKpa, "gauge")],
+  ["大气压", fmtPressure(input.atmKpa, "abs")],
+  ["水温", `${fmt(input.waterTempC)} C`],
+  ["空气温度", `${fmt(input.airTempC)} C`],
+  ["管壁粗糙度", `${fmt(input.roughnessUm)} um`]
+])}
+
+## 3. 几何参数
+
+${mdTable([
+  ["入口段直径", `${fmtMm(result.inletMm)} mm`],
+  ["喉径", `${fmtMm(result.throatMm)} mm`],
+  ["出口段直径", `${fmtMm(result.outletMm)} mm`],
+  ["收缩半角", `${fmt(result.contractionDeg, 1)} deg`],
+  ["扩散半角", `${fmt(result.diffuserDeg, 1)} deg`],
+  ["喉部长度", `${fmtMm(result.throatLengthMm)} mm`],
+  ["空气入口等效直径", `${fmtMm(result.airPortMm)} mm`],
+  ["进气口轴线位置", `${fmtMm(result.airPortOffsetMm)} mm`],
+  ["进气位置效率", `${fmt(result.airPortEfficiency * 100)}%`],
+  ["估算入口直管段", `${fmtMm(lengths.inletStraight)} mm`],
+  ["估算收缩段长度", `${fmtMm(lengths.contractionLen)} mm`],
+  ["估算扩散段长度", `${fmtMm(lengths.diffuserLen)} mm`],
+  ["估算出口直管段", `${fmtMm(lengths.outletStraight)} mm`]
+])}
+
+## 4. 截面积与速度
+
+1. 将流量换算为 \`m3/s\`：\`Q_water = ${fmt(input.waterFlowLpm)} / 60000\`。
+2. 根据 \`A = πD²/4\` 计算入口、喉部、出口截面积。
+3. 根据 \`v = Q/A\` 得到各截面平均速度。
+
+${mdTable([
+  ["入口面积", `${inletArea.toExponential(4)} m2`],
+  ["喉部面积", `${throatArea.toExponential(4)} m2`],
+  ["出口面积", `${outletArea.toExponential(4)} m2`],
+  ["入口速度", `${fmt(result.vIn)} m/s`],
+  ["喉部速度", `${fmt(result.vTh)} m/s`],
+  ["出口速度", `${fmt(result.vOut)} m/s`],
+  ["喉部雷诺数", fmt(result.reynolds, 0)]
+])}
+
+## 5. 喉部压力计算
+
+1. 根据水温估算水密度、黏度和水蒸气压。
+2. 用雷诺数与粗糙度估算摩擦因子。
+3. 用伯努利压降和局部损失估算喉部压降。
+4. 得到喉部绝压：\`p_t = p_in,abs - Δp_throat\`。
+
+${mdTable([
+  ["水密度", `${fmt(result.rho)} kg/m3`],
+  ["水蒸气压", fmtPressure(vapor, "abs")],
+  ["喉部绝压", fmtPressure(result.throatAbs, "abs")],
+  ["混合段绝压", fmtPressure(result.mixedAbs, "abs")],
+  ["空化裕度", fmtPressure(result.cavitationMarginKpa, "delta")]
+])}
+
+## 6. 空气吸入计算
+
+1. 判断喉部/混合段压力是否低于空气入口压力。
+2. 若可吸气，用可压缩孔口流估算空气流量。
+3. 根据进气口轴线相对喉部低压核心的位置修正负压利用率。
+4. 若压力比低于临界值，标记为空气入口可能临界流。
+
+${mdTable([
+  ["吸气状态", passText],
+  ["实际进气量", `${fmt(result.airFlowLpm)} L/min`],
+  ["进气位置效率", `${fmt(result.airPortEfficiency * 100)}%`],
+  ["空气入口是否临界流", result.airChoked ? "是" : "否"],
+  ["气水比", fmt(result.gasRatio)],
+  ["估算含气率", `${fmt(result.voidFraction * 100)}%`]
+])}
+
+## 7. 扩散段、背压与出口状态
+
+1. 根据扩散半角、粗糙度和模型配置估算压恢复效率。
+2. 计算出口可用压力。
+3. 比较出口可用压力与设定背压。
+4. 判断混合段压力是否高于空气入口压力，高于则存在倒灌/逆流风险。
+
+${mdTable([
+  ["出口可用表压", fmtPressure(result.availableGaugeKpa, "gauge")],
+  ["估算总压损", fmtPressure(result.pressureLossKpa, "delta")],
+  ["背压判定", backText],
+  ["逆流判定", result.reverse ? "存在进气口逆流风险" : "未触发逆流"],
+  ["空化判定", cavText]
+])}
+
+## 8. 本页使用公式
+
+${formulaMarkdown(formulaKeys)}
+
+## 9. 注意事项
+
+- 本结果为工程初选和趋势判断，不替代实验标定、CFD 或正式安全设计。
+- STP 导出为 faceted BREP 近似几何，适合结构沟通和初步检查，不代表制造级内流道曲面精修。
+- 若用于真实设备，建议用样机标定流量系数、局部损失系数、扩散段分离边界和空化裕度。
+`;
+    }
+
+    function createDeepMarkdown(result) {
+      const model = getModelConfig();
+      const input = result.input;
+      const nodeTable = [
+        "| 节点 | 位置 mm | 段落 | 直径 mm | 速度 m/s | 压力 | 空气量 L/min | 含气率 % | 混合密度 kg/m3 | 空化裕度 |",
+        "|---:|---:|---|---:|---:|---:|---:|---:|---:|---:|",
+        ...result.nodes.map((node) => `| ${node.index} | ${fmtMm(node.xMm)} | ${node.segment} | ${fmtMm(node.diameterMm)} | ${fmt(node.velocity)} | ${fmtPressure(node.pressureAbsKpa, "abs")} | ${fmt(node.airFlowLpm)} | ${fmt(node.voidFraction * 100)} | ${fmt(node.rhoMix)} | ${fmtPressure(node.cavitationMarginKpa, "delta")} |`)
+      ].join("\n");
+      return `# 文丘里管深度计算步骤
+
+生成时间：${new Date().toLocaleString()}
+
+## 1. 模型定位
+
+${mdTable([
+  ["应用模型", model.label],
+  ["模型说明", model.description],
+  ["深度模型", "1D 多节点工程校核，不做 CFD"],
+  ["压力单位", pressureUnits[state.pressureUnit].delta]
+])}
+
+## 2. 输入工况与几何
+
+${mdTable([
+  ["进水量", `${fmt(input.waterFlowLpm)} L/min`],
+  ["输入/目标进气量", `${fmt(input.airFlowLpm)} L/min`],
+  ["入口压力", fmtPressure(input.inletGaugeKpa, "gauge")],
+  ["出口背压", fmtPressure(input.backGaugeKpa, "gauge")],
+  ["大气压", fmtPressure(input.atmKpa, "abs")],
+  ["水温", `${fmt(input.waterTempC)} C`],
+  ["空气温度", `${fmt(input.airTempC)} C`],
+  ["入口段直径", `${fmtMm(result.base.inletMm)} mm`],
+  ["喉径", `${fmtMm(result.base.throatMm)} mm`],
+  ["出口段直径", `${fmtMm(result.base.outletMm)} mm`],
+  ["收缩半角", `${fmt(result.base.contractionDeg, 1)} deg`],
+  ["扩散半角", `${fmt(result.base.diffuserDeg, 1)} deg`],
+  ["喉部长度", `${fmtMm(result.base.throatLengthMm)} mm`],
+  ["空气入口等效直径", `${fmtMm(result.base.airPortMm)} mm`],
+  ["进气口轴线位置", `${fmtMm(result.base.airPortOffsetMm)} mm`],
+  ["进气位置效率", `${fmt(result.base.airPortEfficiency * 100)}%`]
+])}
+
+## 3. 深度参数
+
+${mdTable([
+  ["节点数", `${result.options.nodeCount}`],
+  ["滑移比", `${fmt(result.options.slipRatio)}`],
+  ["气泡平均直径", `${fmtMm(result.options.bubbleDiameterMm)} mm`],
+  ["空气膨胀修正", result.options.useAirExpansion ? "开启" : "关闭"],
+  ["两相密度修正", result.options.useTwoPhaseDensity ? "开启" : "关闭"]
+])}
+
+## 4. 计算步骤
+
+1. 根据入口直管段、收缩段、喉部、扩散段和出口直管段生成轴向节点。
+2. 对每个节点由直径计算截面积，并按分段压力趋势估算局部压力。
+3. 按空气膨胀开关计算局部空气体积流量。
+4. 按滑移比修正局部含气率，并按两相密度开关计算混合密度。
+5. 逐节点计算速度、空化裕度，并汇总最低压力、最低空化裕度、最大含气率和背压/逆流风险。
+
+## 5. 摘要
+
+${mdTable([
+  ["最低压力", `${fmtPressure(result.summary.minPressureNode.pressureAbsKpa, "abs")}，节点 ${result.summary.minPressureNode.index}`],
+  ["最低空化裕度", `${fmtPressure(result.summary.minCavitationNode.cavitationMarginKpa, "delta")}，节点 ${result.summary.minCavitationNode.index}`],
+  ["最大含气率", `${fmt(result.summary.maxVoidNode.voidFraction * 100)}%，节点 ${result.summary.maxVoidNode.index}`],
+  ["出口可用表压", fmtPressure(result.base.availableGaugeKpa, "gauge")],
+  ["实际进气量", `${fmt(result.base.airFlowLpm)} L/min`]
+])}
+
+## 6. 沿程节点表
+
+${nodeTable}
+
+## 7. 风险
+
+${result.risks.map(([cls, text]) => `- ${cls.toUpperCase()}：${text}`).join("\n")}
+
+## 8. 本页使用公式
+
+${formulaMarkdown(pageFormulas.deep)}
+
+## 9. 注意事项
+
+- 深度页仍为工程趋势模型，不替代 CFD、实验标定或压力设备安全认证。
+- 空气膨胀、滑移比和两相密度修正均为简化项，需要用实测数据校正。
+- 气泡直径第一版只参与风险提示，不代表氧转移或破碎聚并模型。
+`;
+    }
+
+    function downloadMarkdown(result, pageKind, label) {
+      if (!result) return;
+      const fileBase = `${label}_${new Date().toISOString().slice(0, 19).replace(/[-:T]/g, '')}`;
+      const title = pageKind === "manual" ? "文丘里管手动校核" : pageKind === "target" ? "文丘里管目标反算" : "文丘里管自动仿真";
+      const blob = new Blob([createCalculationMarkdown(result, pageKind, title)], { type: "text/markdown;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${fileBase}.md`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function downloadDeepMarkdown() {
+      if (!deepResult) updateDeep();
+      const fileBase = `venturi_deep_steps_${new Date().toISOString().slice(0, 19).replace(/[-:T]/g, '')}`;
+      const blob = new Blob([createDeepMarkdown(deepResult)], { type: "text/markdown;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${fileBase}.md`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function update() {
+      latest = calculate();
+      if (state.airMode === "flow") {
+        setValue("airPortMm", clamp(latest.airPortMm, 0.05, 4.5));
+      } else {
+        setValue("airFlowLpm", clamp(latest.airFlowLpm, 0, 1.5));
+      }
+      renderOutputs(latest);
+      drawPipe(latest);
+      drawJet(latest);
+    }
+
+    function showPage(page) {
+      const isSim = page === "sim";
+      const isTarget = page === "target";
+      const isManual = page === "manual";
+      const isDeep = page === "deep";
+      const isMantra = page === "mantra";
+      document.getElementById("simPage").classList.toggle("hidden", !isSim);
+      document.getElementById("targetPage").classList.toggle("hidden", !isTarget);
+      document.getElementById("manualPage").classList.toggle("hidden", !isManual);
+      document.getElementById("deepPage").classList.toggle("hidden", !isDeep);
+      document.getElementById("mantraPage").classList.toggle("hidden", !isMantra);
+      document.getElementById("showSimPage").classList.toggle("active", isSim);
+      document.getElementById("showTargetPage").classList.toggle("active", isTarget);
+      document.getElementById("showManualPage").classList.toggle("active", isManual);
+      document.getElementById("showDeepPage").classList.toggle("active", isDeep);
+      document.getElementById("showMantraPage").classList.toggle("active", isMantra);
+      if (isTarget && targetSolution) drawTargetPipe(targetSolution);
+      if (isManual) updateManual();
+      if (isDeep) updateDeep();
+      if (isSim) update();
+    }
+
+    function applyTargetSolution() {
+      if (!targetSolution) return;
+      state.airMode = "flow";
+      state.airFlowUnit = "lpm";
+      setValue("waterFlowLpm", targetSolution.targetWater);
+      setValue("airFlowLpm", targetSolution.targetAir);
+      setValue("inletGaugeKpa", targetSolution.inletGaugeKpa);
+      setValue("backGaugeKpa", targetSolution.targetBack);
+      setValue("maxOuterMm", Math.max(state.values.maxOuterMm, targetSolution.inletMm));
+      setValue("airPortMm", clamp(targetSolution.airPortMm, 0.05, 4.5));
+      setValue("airPortOffsetMm", clamp(targetSolution.airPortOffsetMm || 0, -20, 30));
+      document.getElementById("modeFlow").classList.add("active");
+      document.getElementById("modeDiameter").classList.remove("active");
+      document.getElementById("airFlowField").hidden = false;
+      document.getElementById("airUnitToggle").hidden = false;
+      document.getElementById("airDiameterField").hidden = true;
+      document.getElementById("airUnitLpm").classList.add("active");
+      document.getElementById("airUnitMlpm").classList.remove("active");
+      refreshFieldDisplay("airFlowLpm");
+      update();
+    }
+
+    function fillManualFromResult(result, flowSource = state.values) {
+      if (!result) return;
+      state.manualValues = {
+        ...state.manualValues,
+        waterFlowLpm: flowSource.waterFlowLpm || result.targetWater || state.manualValues.waterFlowLpm,
+        airFlowLpm: flowSource.airFlowLpm || result.targetAir || result.airFlowLpm,
+        inletGaugeKpa: result.inletGaugeKpa || flowSource.inletGaugeKpa || state.manualValues.inletGaugeKpa,
+        backGaugeKpa: flowSource.backGaugeKpa || result.targetBack || state.manualValues.backGaugeKpa,
+        atmKpa: flowSource.atmKpa || state.values.atmKpa,
+        waterTempC: flowSource.waterTempC || state.values.waterTempC,
+        airTempC: flowSource.airTempC || state.values.airTempC,
+        inletMm: result.inletMm,
+        throatMm: result.throatMm,
+        outletMm: result.outletMm,
+        contractionDeg: result.contractionDeg,
+        diffuserDeg: result.diffuserDeg,
+        throatLengthMm: result.throatLengthMm,
+        airPortMm: result.airPortMm,
+        airPortOffsetMm: result.airPortOffsetMm || flowSource.airPortOffsetMm || 0,
+        roughnessUm: flowSource.roughnessUm || state.values.roughnessUm
+      };
+      refreshManualFieldDisplays();
+      updateManual();
+      if (deepResult) updateDeep();
+    }
+
+    function animate() {
+      if (latest) {
+        drawPipe(latest);
+        drawJet(latest);
+      }
+      if (!document.getElementById("targetPage").classList.contains("hidden") && targetSolution) {
+        drawTargetPipe(targetSolution);
+      }
+      if (!document.getElementById("manualPage").classList.contains("hidden") && manualResult) {
+        drawManualPipe(manualResult);
+        drawManualJet(manualResult);
+      }
+      requestAnimationFrame(animate);
+    }
+
+    document.getElementById("modeFlow").addEventListener("click", () => {
+      state.airMode = "flow";
+      document.getElementById("modeFlow").classList.add("active");
+      document.getElementById("modeDiameter").classList.remove("active");
+      document.getElementById("airFlowField").hidden = false;
+      document.getElementById("airUnitToggle").hidden = false;
+      document.getElementById("airDiameterField").hidden = true;
+      update();
+    });
+
+    document.getElementById("modeDiameter").addEventListener("click", () => {
+      state.airMode = "diameter";
+      document.getElementById("modeDiameter").classList.add("active");
+      document.getElementById("modeFlow").classList.remove("active");
+      document.getElementById("airDiameterField").hidden = false;
+      document.getElementById("airFlowField").hidden = true;
+      document.getElementById("airUnitToggle").hidden = true;
+      update();
+    });
+
+    document.getElementById("airUnitLpm").addEventListener("click", () => {
+      state.airFlowUnit = "lpm";
+      document.getElementById("airUnitLpm").classList.add("active");
+      document.getElementById("airUnitMlpm").classList.remove("active");
+      refreshFieldDisplay("airFlowLpm");
+      update();
+    });
+
+    document.getElementById("airUnitMlpm").addEventListener("click", () => {
+      state.airFlowUnit = "mlpm";
+      document.getElementById("airUnitMlpm").classList.add("active");
+      document.getElementById("airUnitLpm").classList.remove("active");
+      refreshFieldDisplay("airFlowLpm");
+      update();
+    });
+
+    function setPressureUnit(unitName) {
+      syncTargetPressureState();
+      state.pressureUnit = unitName;
+      document.getElementById("pressureUnitKpa").classList.toggle("active", unitName === "kpa");
+      document.getElementById("pressureUnitMpa").classList.toggle("active", unitName === "mpa");
+      document.getElementById("pressureUnitKg").classList.toggle("active", unitName === "kg");
+      refreshPressureDisplays();
+    }
+
+    document.getElementById("pressureUnitKpa").addEventListener("click", () => setPressureUnit("kpa"));
+    document.getElementById("pressureUnitMpa").addEventListener("click", () => setPressureUnit("mpa"));
+    document.getElementById("pressureUnitKg").addEventListener("click", () => setPressureUnit("kg"));
+
+    targetPressureInputs.forEach((config) => {
+      document.getElementById(config.id).addEventListener("input", () => {
+        const value = pressureInputToKpa(document.getElementById(config.id).value);
+        state.targetValues[config.key] = clamp(value, config.min, config.max);
+      });
+    });
+
+    document.getElementById("autoDesign").addEventListener("click", () => {
+      particleSeed += 1.37;
+      update();
+    });
+    document.getElementById("copySimToManual").addEventListener("click", () => {
+      fillManualFromResult(latest, state.values);
+      showPage("manual");
+    });
+    document.getElementById("downloadSimStep").addEventListener("click", () => downloadStep(latest, "venturi_auto"));
+    document.getElementById("downloadSimMarkdown").addEventListener("click", () => downloadMarkdown(latest, "sim", "venturi_auto_steps"));
+
+    document.getElementById("showSimPage").addEventListener("click", () => showPage("sim"));
+    document.getElementById("showTargetPage").addEventListener("click", () => showPage("target"));
+    document.getElementById("showManualPage").addEventListener("click", () => showPage("manual"));
+    document.getElementById("showDeepPage").addEventListener("click", () => showPage("deep"));
+    document.getElementById("showMantraPage").addEventListener("click", () => showPage("mantra"));
+
+    document.getElementById("solveSuctionTarget").addEventListener("click", () => {
+      renderTargetSolution(solveSuctionTarget());
+    });
+
+    document.getElementById("solveLowFlowExample").addEventListener("click", () => {
+      document.getElementById("targetWaterFlow").value = 0.6;
+      document.getElementById("targetAirFlow").value = 0.2;
+      document.getElementById("targetInletDiameter").value = 3.5;
+      document.getElementById("targetAirPortOffset").value = 0;
+      state.targetValues.targetBackKpa = 0;
+      state.targetValues.targetMaxInletKpa = 500;
+      document.getElementById("targetMaxAirPort").value = 2;
+      refreshPressureDisplays();
+      renderTargetSolution(solveSuctionTarget());
+    });
+
+    document.getElementById("applyTargetSolution").addEventListener("click", () => {
+      applyTargetSolution();
+    });
+    document.getElementById("downloadTargetStep").addEventListener("click", () => downloadStep(targetSolution, "venturi_target"));
+    document.getElementById("downloadTargetMarkdown").addEventListener("click", () => downloadMarkdown(targetSolution, "target", "venturi_target_steps"));
+
+    document.getElementById("viewTargetInSim").addEventListener("click", () => {
+      applyTargetSolution();
+      showPage("sim");
+    });
+    document.getElementById("copyTargetToManual").addEventListener("click", () => {
+      fillManualFromResult(targetSolution, {
+        ...state.values,
+        waterFlowLpm: targetSolution ? targetSolution.targetWater : state.values.waterFlowLpm,
+        airFlowLpm: targetSolution ? targetSolution.targetAir : state.values.airFlowLpm,
+        inletGaugeKpa: targetSolution ? targetSolution.inletGaugeKpa : state.values.inletGaugeKpa,
+        backGaugeKpa: targetSolution ? targetSolution.targetBack : state.values.backGaugeKpa,
+        airPortOffsetMm: targetSolution ? targetSolution.airPortOffsetMm : state.values.airPortOffsetMm
+      });
+      showPage("manual");
+    });
+
+    document.getElementById("runManualCheck").addEventListener("click", () => updateManual());
+    document.getElementById("downloadManualStep").addEventListener("click", () => downloadStep(manualResult, "venturi_manual"));
+    document.getElementById("downloadManualMarkdown").addEventListener("click", () => downloadMarkdown(manualResult, "manual", "venturi_manual_steps"));
+    document.getElementById("fillManualFromSim").addEventListener("click", () => fillManualFromResult(latest, state.values));
+    document.getElementById("fillManualFromTarget").addEventListener("click", () => fillManualFromResult(targetSolution, {
+      ...state.values,
+      waterFlowLpm: targetSolution ? targetSolution.targetWater : state.values.waterFlowLpm,
+      airFlowLpm: targetSolution ? targetSolution.targetAir : state.values.airFlowLpm,
+      inletGaugeKpa: targetSolution ? targetSolution.inletGaugeKpa : state.values.inletGaugeKpa,
+      backGaugeKpa: targetSolution ? targetSolution.targetBack : state.values.backGaugeKpa,
+      airPortOffsetMm: targetSolution ? targetSolution.airPortOffsetMm : state.values.airPortOffsetMm
+    }));
+
+    ["deepNodeCount", "deepSlipRatio", "deepBubbleDiameter", "deepUseAirExpansion", "deepUseTwoPhaseDensity"].forEach((id) => {
+      document.getElementById(id).addEventListener("input", () => updateDeep());
+      document.getElementById(id).addEventListener("change", () => updateDeep());
+    });
+    document.getElementById("fillDeepFromManual").addEventListener("click", () => {
+      refreshManualFieldDisplays();
+      updateManual();
+      updateDeep();
+    });
+    document.getElementById("fillDeepFromTarget").addEventListener("click", () => {
+      fillManualFromResult(targetSolution, {
+        ...state.values,
+        waterFlowLpm: targetSolution ? targetSolution.targetWater : state.values.waterFlowLpm,
+        airFlowLpm: targetSolution ? targetSolution.targetAir : state.values.airFlowLpm,
+        inletGaugeKpa: targetSolution ? targetSolution.inletGaugeKpa : state.values.inletGaugeKpa,
+        backGaugeKpa: targetSolution ? targetSolution.targetBack : state.values.backGaugeKpa,
+        airPortOffsetMm: targetSolution ? targetSolution.airPortOffsetMm : state.values.airPortOffsetMm
+      });
+      updateDeep();
+    });
+    document.getElementById("runDeepCalc").addEventListener("click", () => updateDeep());
+    document.getElementById("downloadDeepMarkdown").addEventListener("click", () => downloadDeepMarkdown());
+
+    window.addEventListener("resize", () => {
+      update();
+      if (deepResult) drawDeepCurves(deepResult);
+    });
+
+    renderFields();
+    renderManualFields();
+    syncDeepControlsFromState();
+    renderModelToggles();
+    renderAllFormulas();
+    update();
+    renderTargetSolution(solveSuctionTarget());
+    updateManual();
+    requestAnimationFrame(animate);
+  </script>
+</body>
+</html>
