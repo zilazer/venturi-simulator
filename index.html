@@ -56,6 +56,17 @@
       backdrop-filter: blur(12px);
     }
 
+    body.manual-status-active header {
+      display: grid;
+      grid-template-columns: minmax(420px, 1fr) minmax(520px, 760px);
+      gap: 16px 24px;
+      align-items: end;
+    }
+
+    .header-main {
+      min-width: 0;
+    }
+
     h1 {
       margin: 0;
       font-size: clamp(22px, 3vw, 34px);
@@ -377,6 +388,41 @@
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 10px;
+    }
+
+    .manual-inline-status {
+      display: none;
+    }
+
+    .header-status-dock {
+      align-self: end;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .header-status-dock.hidden {
+      display: none;
+    }
+
+    .header-status-dock .status-card {
+      min-height: 64px;
+      padding: 9px 10px;
+    }
+
+    .header-status-dock .status-label {
+      font-size: 11px;
+    }
+
+    .header-status-dock .status-value {
+      margin-top: 5px;
+      font-size: 15px;
+    }
+
+    .header-status-dock .status-card[data-tooltip]::after {
+      top: calc(100% + 8px);
+      bottom: auto;
     }
 
     .status-card {
@@ -800,6 +846,10 @@
     }
 
     @media (max-width: 1120px) {
+      body.manual-status-active header {
+        grid-template-columns: 1fr;
+      }
+
       main {
         grid-template-columns: 1fr;
       }
@@ -824,6 +874,7 @@
       }
 
       .status-strip,
+      .header-status-dock,
       .grid-two,
       .metrics,
       .solution-hero,
@@ -843,23 +894,26 @@
 </head>
 <body>
   <header>
-    <h1>文丘里管水气混合工程初选</h1>
-    <p class="subtitle">用于小型水气混合方案的趋势计算与结构初选。模型基于伯努利、连续方程、局部损失和简化空气进气估算，不替代实验标定、CFD 或正式安全设计。</p>
-    <nav class="page-tabs" aria-label="页面切换">
-      <button id="showSimPage" class="active" type="button">仿真页</button>
-      <button id="showTargetPage" type="button">目标反算页</button>
-      <button id="showManualPage" type="button">手动校核页</button>
-      <button id="showDeepPage" type="button">深度计算页</button>
-      <button id="showMantraPage" type="button">工程口诀</button>
-    </nav>
-    <div class="global-units">
-      <span>压力单位</span>
-      <div class="unit-toggle" aria-label="压力单位切换">
-        <button id="pressureUnitKpa" class="active" type="button">kPa</button>
-        <button id="pressureUnitMpa" type="button">MPa</button>
-        <button id="pressureUnitKg" type="button">公斤压力</button>
+    <div class="header-main">
+      <h1>文丘里管水气混合工程初选</h1>
+      <p class="subtitle">用于小型水气混合方案的趋势计算与结构初选。模型基于伯努利、连续方程、局部损失和简化空气进气估算，不替代实验标定、CFD 或正式安全设计。</p>
+      <nav class="page-tabs" aria-label="页面切换">
+        <button id="showSimPage" class="active" type="button">仿真页</button>
+        <button id="showTargetPage" type="button">目标反算页</button>
+        <button id="showManualPage" type="button">手动校核页</button>
+        <button id="showDeepPage" type="button">深度计算页</button>
+        <button id="showMantraPage" type="button">工程口诀</button>
+      </nav>
+      <div class="global-units">
+        <span>压力单位</span>
+        <div class="unit-toggle" aria-label="压力单位切换">
+          <button id="pressureUnitKpa" class="active" type="button">kPa</button>
+          <button id="pressureUnitMpa" type="button">MPa</button>
+          <button id="pressureUnitKg" type="button">公斤压力</button>
+        </div>
       </div>
     </div>
+    <div class="header-status-dock hidden" id="manualHeaderStatusDock" aria-live="polite"></div>
   </header>
 
   <main id="simPage" class="page">
@@ -1040,7 +1094,7 @@
     </aside>
 
     <section class="workbench">
-      <div class="status-strip" id="manualStatusStrip"></div>
+      <div class="status-strip manual-inline-status" id="manualStatusStrip"></div>
 
       <div class="grid-two">
         <section class="panel output-panel">
@@ -2379,12 +2433,14 @@
       const backText = result.backOk ? "背压可克服" : "背压过高";
       const cavText = result.cavitationMarginKpa < model.cavitationBadKpa ? "空化风险高" : result.cavitationMarginKpa < model.cavitationWarnKpa ? "接近空化" : "空化裕度足";
       const mixText = result.gasRatio > model.gasRatioWarn ? "气水比过高" : result.gasRatio > model.gasRatioHigh ? "高含气混合" : "常规混合";
-      document.getElementById("manualStatusStrip").innerHTML = [
+      const statusHtml = [
         ["吸气状态", suctionText, result.reverse ? "bad" : result.suction ? "good" : "warn"],
         ["出口背压", backText, result.backOk ? "good" : "bad"],
         ["空化判断", cavText, result.cavitationMarginKpa < model.cavitationBadKpa ? "bad" : result.cavitationMarginKpa < model.cavitationWarnKpa ? "warn" : "good"],
         ["混合强度", mixText, result.gasRatio > model.gasRatioWarn ? "warn" : "good"]
       ].map(([label, value, cls]) => statusCardHtml(label, value, cls, result)).join("");
+      document.getElementById("manualStatusStrip").innerHTML = statusHtml;
+      document.getElementById("manualHeaderStatusDock").innerHTML = statusHtml;
       const manualAdvice = geometryAdvice(result);
       document.getElementById("manualGeometryMetrics").innerHTML = metricHtml([
         ["入口段直径", `${fmtMm(result.inletMm)} mm`, "inletMm"],
@@ -3482,6 +3538,7 @@ ${formulaMarkdown(pageFormulas.deep)}
       const isManual = page === "manual";
       const isDeep = page === "deep";
       const isMantra = page === "mantra";
+      document.body.classList.toggle("manual-status-active", isManual);
       document.getElementById("simPage").classList.toggle("hidden", !isSim);
       document.getElementById("targetPage").classList.toggle("hidden", !isTarget);
       document.getElementById("manualPage").classList.toggle("hidden", !isManual);
@@ -3492,6 +3549,7 @@ ${formulaMarkdown(pageFormulas.deep)}
       document.getElementById("showManualPage").classList.toggle("active", isManual);
       document.getElementById("showDeepPage").classList.toggle("active", isDeep);
       document.getElementById("showMantraPage").classList.toggle("active", isMantra);
+      document.getElementById("manualHeaderStatusDock").classList.toggle("hidden", !isManual);
       if (isTarget && targetSolution) drawTargetPipe(targetSolution);
       if (isManual) updateManual();
       if (isDeep) updateDeep();
