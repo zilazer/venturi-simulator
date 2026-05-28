@@ -175,6 +175,44 @@
       font-weight: 700;
     }
 
+    .header-tools {
+      position: absolute;
+      top: 14px;
+      right: 28px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 2;
+    }
+
+    .language-toggle {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px;
+      padding: 4px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #f2eee5;
+    }
+
+    .language-toggle button {
+      min-height: 28px;
+      border: 0;
+      border-radius: 5px;
+      padding: 0 9px;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .language-toggle button.active {
+      background: var(--panel);
+      color: var(--accent);
+    }
+
     .global-units .unit-toggle {
       width: min(360px, 100%);
       grid-template-columns: repeat(3, 1fr);
@@ -874,7 +912,12 @@
 
     @media (max-width: 760px) {
       header {
-        padding: 18px 16px 10px;
+        padding: 54px 16px 10px;
+      }
+
+      .header-tools {
+        top: 12px;
+        right: 16px;
       }
 
       main {
@@ -902,6 +945,12 @@
 </head>
 <body>
   <header>
+    <div class="header-tools">
+      <div class="language-toggle" aria-label="语言切换">
+        <button id="langZh" class="active" type="button">中文</button>
+        <button id="langEn" type="button">EN</button>
+      </div>
+    </div>
     <div class="header-main">
       <h1>文丘里管水气混合工程初选</h1>
       <p class="subtitle">用于小型水气混合方案的趋势计算与结构初选。模型基于伯努利、连续方程、局部损失和简化空气进气估算，不替代实验标定、CFD 或正式安全设计。</p>
@@ -1364,6 +1413,7 @@
       airFlowUnit: "lpm",
       pressureUnit: "kpa",
       modelKey: "mixing",
+      lang: "zh",
       values: {
         waterFlowLpm: 4,
         inletGaugeKpa: 220,
@@ -1558,6 +1608,277 @@
     const pageStatusHtml = { sim: "", target: "", manual: "", deep: "" };
 
     const KG_PRESSURE_KPA = 98.0665;
+    const enText = {
+      "文丘里管水气混合工程初选": "Venturi Water-Air Mixing Engineering Selector",
+      "用于小型水气混合方案的趋势计算与结构初选。模型基于伯努利、连续方程、局部损失和简化空气进气估算，不替代实验标定、CFD 或正式安全设计。": "Trend calculation and preliminary geometry selection for compact water-air mixing. The model uses Bernoulli, continuity, local losses, and simplified air entrainment estimates. It does not replace lab calibration, CFD, or formal safety design.",
+      "仿真页": "Simulation",
+      "目标反算页": "Target Solver",
+      "手动校核页": "Manual Check",
+      "深度计算页": "Deep 1D",
+      "工程口诀": "Field Notes",
+      "压力单位": "Pressure unit",
+      "公斤压力": "kgf/cm²",
+      "应用模型": "Application Model",
+      "轴向水入口": "Axial Water Inlet",
+      "径向空气入口": "Radial Air Inlet",
+      "目标进气量": "Target air flow",
+      "空气孔径": "Air port diameter",
+      "环境与出口": "Environment and Outlet",
+      "设计约束": "Design Constraints",
+      "自动设计并刷新": "Auto Design / Refresh",
+      "复制到手动校核页": "Copy to Manual Check",
+      "一键生成 STP 文件": "Generate STP",
+      "导出计算步骤 MD": "Export Calculation MD",
+      "压力输入按表压理解，内部计算会换算为绝压。大气压、空气温度和水温会影响密度、吸气能力和空化判断。": "Pressure inputs are gauge values; internal calculations convert them to absolute pressure. Atmosphere, air temperature, and water temperature affect density, suction, and cavitation checks.",
+      "推荐几何参数": "Recommended Geometry",
+      "出口与混合数据": "Outlet and Mixing Data",
+      "几何图示、管内剖面与沿程趋势": "Geometry, Section, and Axial Trends",
+      "出口流体形态": "Outlet Flow Pattern",
+      "风险与建议": "Risks and Suggestions",
+      "公式与说明": "Formulas and Notes",
+      "目标输入": "Target Inputs",
+      "目标进水量": "Target water flow",
+      "期望进水口直径": "Desired inlet diameter",
+      "出口背压": "Outlet back pressure",
+      "最高允许入口压力": "Max allowed inlet pressure",
+      "最大进气口直径": "Max air port diameter",
+      "进气口轴线位置": "Air port axial position",
+      "查找 3.5 mm / 0.6 L/min 示例": "Find 3.5 mm / 0.6 L/min Example",
+      "推算可进气状态": "Solve Feasible Suction",
+      "此页面会自动搜索入口压力、喉径和空气入口等效直径，目标是找到吸气状态为“可吸气”的方案。环境参数、最大外径、粗糙度默认沿用仿真页当前设置。": "This page searches inlet pressure, throat diameter, and air-port diameter to find a feasible suction solution. Environment, max diameter, and roughness default to the simulation page settings.",
+      "目标反算结果": "Target Solver Result",
+      "应用到仿真页": "Apply to Simulation",
+      "查看仿真图": "View Simulation",
+      "可进气方案几何图": "Feasible Geometry",
+      "搜索说明与风险": "Search Notes and Risks",
+      "手动输入": "Manual Inputs",
+      "从仿真页填入": "Fill from Simulation",
+      "从目标反算填入": "Fill from Target Solver",
+      "校核当前参数": "Check Current Parameters",
+      "手动校核页不会自动修改几何参数。收缩半角和扩散半角按用户输入直接参与压损、压恢复和风险判断。": "The manual page does not alter geometry. Contraction and diffuser half-angles are used directly in loss, pressure recovery, and risk checks.",
+      "手动几何参数": "Manual Geometry",
+      "校核输出": "Check Output",
+      "手动校核几何图": "Manual Geometry Diagram",
+      "手动校核出口流态": "Manual Outlet Flow",
+      "深度计算参数": "Deep Calculation Parameters",
+      "节点数": "Node count",
+      "滑移比": "Slip ratio",
+      "气泡平均直径": "Mean bubble diameter",
+      "空气膨胀修正": "Air expansion correction",
+      "两相密度修正": "Two-phase density correction",
+      "从手动校核页填入": "Fill from Manual Check",
+      "运行深度计算": "Run Deep Calculation",
+      "导出深度计算 MD": "Export Deep MD",
+      "深度计算页使用当前手动几何做 1D 多节点校核，不自动改变入口直径、喉径、角度或孔径。节点越多，沿程曲线越细，但仍不是 CFD。": "The deep page uses the current manual geometry for a 1D multi-node check. It does not alter diameters, angles, or port size. More nodes give finer trends, but this is still not CFD.",
+      "深度计算摘要": "Deep Summary",
+      "沿程曲线": "Axial Curves",
+      "多节点沿程表": "Multi-node Profile Table",
+      "深度风险列表": "Deep Risk List",
+      "位置": "Position",
+      "段落": "Segment",
+      "直径 mm": "Diameter mm",
+      "速度 m/s": "Velocity m/s",
+      "水压": "Pressure",
+      "空气量 L/min": "Air L/min",
+      "含气率 %": "Void %",
+      "混合密度 kg/m3": "Mix density kg/m3",
+      "空化裕度": "Cavitation margin",
+      "文丘里 / 微纳米气泡工程口诀": "Venturi / Micro-nano Bubble Field Notes",
+      "贴实验室墙上的版本": "Lab Wall Version",
+      "提示：该网页把气液混合、压恢复和出口射流简化为工程趋势模型。若用于真实设备，请用样机测试标定流量系数、局部损失系数、扩散段分离边界和材料承压裕度。": "Note: this page simplifies gas-liquid mixing, pressure recovery, and outlet jet behavior into an engineering trend model. For real equipment, calibrate flow coefficients, local losses, diffuser separation, and material pressure margins with prototypes.",
+      "中文": "中文",
+      "低压区": "Low pressure",
+      "可吸气": "Suction OK",
+      "逆流/不可行": "Reverse / infeasible",
+      "空化边界": "Cavitation boundary",
+      "压力": "Pressure",
+      "速度": "Velocity",
+      "含气率": "Void fraction",
+      "个": "nodes"
+    };
+
+    const labelEn = {
+      "连续方程": "Continuity equation",
+      "雷诺数": "Reynolds number",
+      "摩擦因子近似": "Friction factor approximation",
+      "伯努利压降": "Bernoulli pressure drop",
+      "喉部压力": "Throat pressure",
+      "扩散段压恢复": "Diffuser pressure recovery",
+      "空气孔口流量": "Air orifice flow",
+      "临界流判断": "Choked flow check",
+      "自动角度估算": "Automatic angle estimate",
+      "目标反算搜索": "Target solver search",
+      "气水比": "Gas-water ratio",
+      "估算含气率": "Estimated void fraction",
+      "背压判定": "Back pressure check",
+      "逆流判定": "Reverse-flow check",
+      "手动角度损失": "Manual angle losses",
+      "分段连续方程": "Segmented continuity",
+      "分段压力趋势": "Segmented pressure trend",
+      "空气体积膨胀": "Air volume expansion",
+      "滑移比修正": "Slip-ratio correction",
+      "两相混合密度": "Two-phase mixture density",
+      "分段含气率": "Segmented void fraction",
+      "分段空化裕度": "Segmented cavitation margin",
+      "分段背压与逆流": "Segmented back-pressure and reverse-flow checks",
+      "水流量 Q 由截面积 A 和平均速度 v 决定，用于入口、喉部和出口速度计算。": "Water flow Q is determined by area A and mean velocity v, used for inlet, throat, and outlet velocity calculations.",
+      "用水密度、速度、直径和黏度判断流动状态，并选择摩擦因子估算方式。": "Uses water density, velocity, diameter, and viscosity to identify flow regime and estimate friction factor.",
+      "用于估算喉部沿程损失，粗糙度越大损失越高。": "Used to estimate throat friction loss; higher roughness increases loss.",
+      "由速度升高和局部/沿程损失估算喉部压力下降。": "Estimates throat pressure drop from acceleration plus local and friction losses.",
+      "喉部绝压低于空气入口压力时才可能吸气。": "Air can be entrained only when throat absolute pressure is below air inlet pressure.",
+      "扩散角、粗糙度和模型类型会影响压恢复效率和扩散段损失。": "Diffuser angle, roughness, and model type affect recovery efficiency and diffuser loss.",
+      "按简化可压缩孔口流估算吸入空气量或反算空气入口等效直径。": "Uses simplified compressible orifice flow to estimate air intake or solve air-port diameter.",
+      "当压比低于临界值时，空气入口可能达到临界流，进气量不再线性增加。": "When pressure ratio falls below critical, the air inlet may choke and air flow no longer increases linearly.",
+      "自动仿真和目标反算页会按流速、压差、气水比、粗糙度和模型配置估算收缩半角与扩散半角。": "Simulation and target solver estimate contraction and diffuser half-angles from velocity, pressure, gas ratio, roughness, and model settings.",
+      "目标反算页枚举入口压力和喉径，并按压损、进气孔径、入口直径偏差、气水比和空化裕度选择最优可行方案。": "The target solver enumerates inlet pressure and throat diameter, then scores feasible options by pressure loss, air-port size, inlet-diameter error, gas ratio, and cavitation margin.",
+      "用于表示进气强度，并参与含气率和模型风险提示。": "Represents air intake intensity and feeds void-fraction and risk checks.",
+      "用体积流量近似估算出口混合流中的空气体积分数。": "Approximates the air volume fraction in the outlet mixture using volume flow rates.",
+      "喉部绝压越接近水蒸气压，空化风险越高。": "The closer throat absolute pressure is to water vapor pressure, the higher the cavitation risk.",
+      "出口可用压力必须高于设定背压，否则出口流动不成立。": "Available outlet pressure must exceed the specified back pressure; otherwise outlet flow is not feasible.",
+      "混合段压力高于空气入口压力并超过约 1 kPa 判定裕度时，径向进气口可能倒灌/逆流。": "If mixed-zone pressure exceeds air inlet pressure by about 1 kPa, the radial air port may reverse-flow.",
+      "手动校核页使用用户输入的收缩半角和扩散半角，不自动推荐角度。": "Manual check uses user-entered contraction and diffuser half-angles directly instead of recommending them.",
+      "进气口越接近喉部低压核心，负压利用越充分；偏离喉部会降低吸气效率并提高倒灌敏感性。": "An air port closer to the throat low-pressure core uses suction more effectively; offset reduces suction efficiency and raises reverse-flow sensitivity.",
+      "深度页把文丘里沿轴向离散成多个节点；开启两相密度修正时 Q_mix 取水量加局部空气体积量，关闭时只按水量估速。": "The deep page discretizes the venturi axially. With two-phase density enabled, Q_mix includes water plus local air volume; otherwise velocity uses water flow only.",
+      "深度页第一版不做逐段递推求解，而是在入口、收缩、喉部、扩散和出口锚点之间做分段压力插值趋势校核。": "Deep mode v1 does not solve recursive segment equations; it interpolates pressure trends between inlet, contraction, throat, diffuser, and outlet anchor points.",
+      "开启空气膨胀修正时，压力越低空气体积流量越大，含气率也会升高。": "With air expansion enabled, lower pressure increases air volume flow and raises void fraction.",
+      "深度页用滑移比 S 简化气液相对速度影响，S 越大，参与局部含气率计算的等效空气体积越小。": "Deep mode uses slip ratio S to simplify gas-liquid relative velocity; larger S lowers effective air volume for void-fraction calculation.",
+      "开启两相密度修正时，用局部含气率估算混合密度，用于趋势校核。": "With two-phase density enabled, local void fraction estimates mixture density for trend checks.",
+      "按滑移比修正后的局部空气体积流量和水流量估算每个节点的空气体积分数。": "Estimates node void fraction from slip-corrected local air volume flow and water flow.",
+      "逐节点比较局部绝压和水蒸气压，定位最接近空化的区域。": "Compares local absolute pressure against water vapor pressure at each node to locate cavitation-prone regions.",
+      "出口段压力不足会触发背压失败；喉部/混合段压力高于空气入口压力会提示逆流风险。": "Insufficient outlet pressure triggers back-pressure failure; throat/mixing pressure above air inlet pressure indicates reverse-flow risk.",
+      "第三方模型参数会直接影响自动搜索、手动校核、风险阈值和几何角度范围。": "Third-party model parameters directly affect auto search, manual checks, risk thresholds, and geometry angle ranges.",
+      "小型水气混合": "Compact water-air mixing",
+      "水处理曝气": "Water treatment aeration",
+      "工业喷射器": "Industrial ejector",
+      "第三方模型": "Third-party model",
+      "适合 12 L/min 以下进水、1.5 L/min 以下进气、进水口可校核至 50 mm 的小型加工件，按 0.01 mm 几何精度做初选。": "For compact machined parts below 12 L/min water and 1.5 L/min air; inlet checks up to 50 mm with 0.01 mm geometry precision.",
+      "小流量水处理曝气校核，仍围绕 12 L/min 以下水量和 1.5 L/min 以下进气调教，进水口上限放宽至 50 mm。": "Low-flow water-treatment aeration check, tuned around water below 12 L/min and air below 1.5 L/min, with inlet limit extended to 50 mm.",
+      "小尺寸工业喷射器保守校核，进水口可至 50 mm，重点限制空化、扩散段分离和 0.01 mm 级喉径加工误差带来的偏差。": "Conservative check for compact industrial ejectors, inlet up to 50 mm, emphasizing cavitation, diffuser separation, and 0.01 mm throat machining tolerance effects.",
+      "开放主要经验系数和阈值给用户自定义，默认参数同小流量场景，进水口上限放宽至 50 mm，适合用实测数据继续调教。": "Exposes key empirical coefficients and thresholds for user tuning. Defaults follow the low-flow setup, with inlet limit extended to 50 mm for calibration with test data.",
+      "进水量": "Water flow",
+      "入口压力": "Inlet pressure",
+      "水温": "Water temp",
+      "进气量": "Air flow",
+      "空气入口等效直径": "Air port equivalent diameter",
+      "大气压": "Atmospheric pressure",
+      "空气温度": "Air temp",
+      "最大入口/外径": "Max inlet/outer diameter",
+      "期望压损": "Target pressure loss",
+      "管壁粗糙度": "Wall roughness",
+      "入口段直径": "Inlet diameter",
+      "喉径": "Throat diameter",
+      "出口段直径": "Outlet diameter",
+      "收缩半角": "Contraction half-angle",
+      "扩散半角": "Diffuser half-angle",
+      "喉部长度": "Throat length",
+      "最大喉径/外径": "Max throat/outer ratio",
+      "收缩基础损失": "Base contraction loss",
+      "喉部摩擦倍率": "Throat friction multiplier",
+      "压恢复基准效率": "Base recovery efficiency",
+      "压恢复下限": "Recovery lower limit",
+      "压恢复上限": "Recovery upper limit",
+      "扩散基础损失": "Base diffuser loss",
+      "空化警告裕度": "Cavitation warning margin",
+      "空化危险裕度": "Cavitation danger margin",
+      "反算空化目标": "Solver cavitation target",
+      "气水比警告": "Gas ratio warning",
+      "高含气阈值": "High gas threshold",
+      "搜索压力步进": "Search pressure step",
+      "收缩半角下限": "Contraction angle min",
+      "收缩半角上限": "Contraction angle max",
+      "扩散半角下限": "Diffuser angle min",
+      "扩散半角上限": "Diffuser angle max",
+      "吸气状态": "Suction status",
+      "空化判断": "Cavitation check",
+      "混合强度": "Mixing intensity",
+      "无法吸气": "No suction",
+      "进气口逆流": "Air port reverse flow",
+      "背压可克服": "Back pressure OK",
+      "背压过高": "Back pressure too high",
+      "空化风险高": "High cavitation risk",
+      "接近空化": "Near cavitation",
+      "空化裕度足": "Cavitation margin OK",
+      "气水比过高": "Gas ratio too high",
+      "高含气混合": "High-gas mixing",
+      "常规混合": "Normal mixing",
+      "搜索状态": "Search status",
+      "找到可进气方案": "Feasible suction found",
+      "未找到可进气方案": "No feasible suction found",
+      "推荐入口压力": "Recommended inlet pressure",
+      "推荐进气孔": "Recommended air port",
+      "已测试组合": "Tested combinations",
+      "建议": "Suggestion",
+      "提高入口压力或放宽孔径": "Raise inlet pressure or relax port limit",
+      "最低压力": "Minimum pressure",
+      "最低空化裕度": "Minimum cavitation margin",
+      "最大含气率": "Maximum void fraction",
+      "出口可用压力": "Available outlet pressure",
+      "进气位置效率": "Air port efficiency",
+      "喉部雷诺数": "Throat Reynolds number",
+      "喉部绝压": "Throat absolute pressure",
+      "混合段绝压": "Mixing-zone absolute pressure",
+      "喉部速度": "Throat velocity",
+      "出口速度": "Outlet velocity",
+      "出口可用表压": "Available outlet gauge pressure",
+      "估算总压损": "Estimated total pressure loss",
+      "实际进气量": "Actual air intake",
+      "气水比 / 含气率": "Gas ratio / void fraction",
+      "进水口偏差": "Inlet diameter error",
+      "搜索组合数": "Searched combinations",
+      "总长度": "Total length",
+      "出口节点表压": "Outlet node gauge pressure",
+      "开启": "On",
+      "关闭": "Off",
+      "入口段": "Inlet",
+      "收缩段": "Contraction",
+      "喉部/混合段": "Throat / mixing",
+      "扩散段": "Diffuser",
+      "出口段": "Outlet"
+    };
+
+    function tx(text) {
+      if (state.lang !== "en") return text;
+      return labelEn[text] || enText[text] || text;
+    }
+
+    function translateStaticContent() {
+      const selector = [
+        "h1",
+        ".subtitle",
+        ".page-tabs button",
+        ".global-units > span",
+        ".language-toggle button",
+        ".section-title",
+        ".mode-toggle button",
+        ".primary-button",
+        ".secondary-button",
+        ".hint",
+        ".label-row > span:first-child",
+        ".checkbox-field > span",
+        "th",
+        ".footer-note",
+        ".mantra-card h3",
+        ".mantra-card p",
+        ".mantra-feature p"
+      ].join(",");
+      document.querySelectorAll(selector).forEach((el) => {
+        if (!el.dataset.zhText) el.dataset.zhText = el.textContent.trim();
+        const zh = el.dataset.zhText;
+        el.textContent = state.lang === "en" ? tx(zh) : zh;
+      });
+      document.querySelectorAll(".legend span").forEach((el) => {
+        if (!el.dataset.zhText) el.dataset.zhText = el.textContent.trim();
+        const icon = el.querySelector("i");
+        const text = state.lang === "en" ? tx(el.dataset.zhText) : el.dataset.zhText;
+        el.textContent = "";
+        if (icon) el.appendChild(icon);
+        el.append(` ${text}`);
+      });
+      document.documentElement.lang = state.lang === "en" ? "en" : "zh-CN";
+      document.getElementById("langZh").classList.toggle("active", state.lang === "zh");
+      document.getElementById("langEn").classList.toggle("active", state.lang === "en");
+    }
+
     const pressureKinds = {
       inletGaugeKpa: "gauge",
       atmKpa: "abs",
@@ -1962,7 +2283,7 @@
       row.className = "field";
       row.innerHTML = `
         <label>
-          <span class="label-row"><span>${label}</span><span class="unit">${display.unit}</span></span>
+          <span class="label-row"><span>${tx(label)}</span><span class="unit">${display.unit}</span></span>
           <input type="range" min="${display.min}" max="${display.max}" step="${display.step}" value="${inputDisplay(state.values[key] * display.factor)}">
         </label>
         <input type="number" min="${display.min}" max="${display.max}" step="${display.step}" value="${inputDisplay(state.values[key] * display.factor)}">
@@ -2029,7 +2350,7 @@
         const row = document.createElement("label");
         row.className = "target-field";
         row.innerHTML = `
-          <span class="label-row"><span>${label}</span><span class="unit">${display.unit}</span></span>
+          <span class="label-row"><span>${tx(label)}</span><span class="unit">${display.unit}</span></span>
           <input type="number" min="${display.min}" max="${display.max}" step="${display.step}" value="${inputDisplay(state.manualValues[key] * display.factor)}">
         `;
         const input = row.querySelector("input");
@@ -2120,8 +2441,8 @@
         const advice = adviceMap[key] || [];
         return `
         <div class="metric ${advice.length ? "has-advice" : ""}">
-          <div class="metric-name">${name}</div>
-          <div class="metric-value">${value}</div>
+          <div class="metric-name">${tx(name)}</div>
+          <div class="metric-value">${tx(value)}</div>
           ${adviceHtml(advice)}
         </div>
       `;
@@ -2183,9 +2504,9 @@
         const [name, expr, desc] = formulaCatalog[key];
         return `
           <div class="formula">
-            <div class="formula-name">${name}</div>
+            <div class="formula-name">${tx(name)}</div>
             <div class="formula-expr">${expr}</div>
-            <div class="formula-desc">${desc}</div>
+            <div class="formula-desc">${tx(desc)}</div>
           </div>
         `;
       }).join("");
@@ -2201,14 +2522,14 @@
     function renderModelToggles() {
       document.querySelectorAll("[data-model-toggle]").forEach((container) => {
         container.innerHTML = Object.entries(modelConfigs).map(([key, config]) => `
-          <button type="button" data-model-key="${key}" class="${key === state.modelKey ? "active" : ""}">${config.label}</button>
+          <button type="button" data-model-key="${key}" class="${key === state.modelKey ? "active" : ""}">${tx(config.label)}</button>
         `).join("");
         container.querySelectorAll("button").forEach((button) => {
           button.addEventListener("click", () => setModel(button.dataset.modelKey));
         });
       });
       document.querySelectorAll("[data-model-description]").forEach((container) => {
-        container.textContent = getModelConfig().description;
+        container.textContent = tx(getModelConfig().description);
       });
       renderCustomModelFields();
     }
@@ -2232,11 +2553,11 @@
         }
         const config = getModelConfig("thirdParty");
         container.innerHTML = `
-          <div class="hint">第三方模型参数会直接影响自动搜索、手动校核、风险阈值和几何角度范围。</div>
+          <div class="hint">${tx("第三方模型参数会直接影响自动搜索、手动校核、风险阈值和几何角度范围。")}</div>
           <div class="custom-model-grid">
             ${customModelParamSpecs.map(([key, label, unit, min, max, step]) => `
               <label class="target-field">
-                <span class="label-row"><span>${label}</span><span class="unit">${unit}</span></span>
+                <span class="label-row"><span>${tx(label)}</span><span class="unit">${unit}</span></span>
                 <input data-custom-param="${key}" type="number" min="${min}" max="${max}" step="${step}" value="${inputDisplay(config[key])}">
               </label>
             `).join("")}
@@ -2298,8 +2619,8 @@
       const tip = statusTooltip(label, result);
       return `
         <div class="status-card ${cls}" ${tip ? `data-tooltip="${escapeAttr(tip)}" title="${escapeAttr(tip)}"` : ""}>
-          <div class="status-label">${label}</div>
-          <div class="status-value">${value}</div>
+          <div class="status-label">${tx(label)}</div>
+          <div class="status-value">${tx(value)}</div>
         </div>
       `;
     }
@@ -2391,8 +2712,8 @@
           ["建议", "提高入口压力或放宽孔径", "warn"]
         ].map(([label, value, cls]) => `
           <div class="status-card ${cls}">
-            <div class="status-label">${label}</div>
-            <div class="status-value">${value}</div>
+            <div class="status-label">${tx(label)}</div>
+            <div class="status-value">${tx(value)}</div>
           </div>
         `).join("");
         hero.innerHTML = failureStatusHtml;
@@ -2418,8 +2739,8 @@
         ["推荐进气孔", `${fmtMm(result.airPortMm)} mm`, "good"]
       ].map(([label, value, cls]) => `
         <div class="status-card ${cls}">
-          <div class="status-label">${label}</div>
-          <div class="status-value">${value}</div>
+          <div class="status-label">${tx(label)}</div>
+          <div class="status-value">${tx(value)}</div>
         </div>
       `).join("");
       hero.innerHTML = targetStatusHtml;
@@ -2720,8 +3041,8 @@
         ["出口可用压力", fmtPressure(result.base.availableGaugeKpa, "gauge"), result.base.backOk ? "good" : "bad"]
       ].map(([label, value, cls]) => `
         <div class="status-card ${cls}">
-          <div class="status-label">${label}</div>
-          <div class="status-value">${value}</div>
+          <div class="status-label">${tx(label)}</div>
+          <div class="status-value">${tx(value)}</div>
         </div>
       `).join("");
       document.getElementById("deepStatusStrip").innerHTML = deepStatusHtml;
@@ -2741,7 +3062,7 @@
       document.getElementById("deepTableBody").innerHTML = result.nodes.map((node) => `
         <tr>
           <td>${fmtMm(node.xMm)} mm</td>
-          <td>${node.segment}</td>
+          <td>${tx(node.segment)}</td>
           <td>${fmtMm(node.diameterMm)}</td>
           <td>${fmt(node.velocity)}</td>
           <td>${fmtPressure(node.pressureAbsKpa, "abs")}</td>
@@ -3703,9 +4024,28 @@ ${formulaMarkdown(pageFormulas.deep)}
       refreshPressureDisplays();
     }
 
+    function setLanguage(lang) {
+      state.lang = lang;
+      translateStaticContent();
+      renderModelToggles();
+      renderAllFormulas();
+      if (latest) renderOutputs(latest);
+      if (targetSolution) renderTargetSolution({ ok: true, result: targetSolution, tested: targetSolution.tested || 0 });
+      if (!targetSolution) renderTargetSolution(solveSuctionTarget());
+      if (manualResult) updateManual();
+      if (deepResult) updateDeep();
+      const activeStatusHtml = pageStatusHtml[activePage] || "";
+      const dock = document.getElementById("headerStatusDock");
+      dock.innerHTML = activeStatusHtml;
+      dock.classList.toggle("hidden", !activeStatusHtml);
+      document.body.classList.toggle("header-status-active", Boolean(activeStatusHtml));
+    }
+
     document.getElementById("pressureUnitKpa").addEventListener("click", () => setPressureUnit("kpa"));
     document.getElementById("pressureUnitMpa").addEventListener("click", () => setPressureUnit("mpa"));
     document.getElementById("pressureUnitKg").addEventListener("click", () => setPressureUnit("kg"));
+    document.getElementById("langZh").addEventListener("click", () => setLanguage("zh"));
+    document.getElementById("langEn").addEventListener("click", () => setLanguage("en"));
 
     targetPressureInputs.forEach((config) => {
       document.getElementById(config.id).addEventListener("input", () => {
@@ -3812,6 +4152,7 @@ ${formulaMarkdown(pageFormulas.deep)}
 
     renderFields();
     renderManualFields();
+    translateStaticContent();
     syncDeepControlsFromState();
     renderModelToggles();
     renderAllFormulas();
