@@ -941,6 +941,18 @@
         width: 82px;
       }
     }
+
+    .coordinate-output {
+      width: 100%;
+      min-height: 180px;
+      resize: vertical;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 10px;
+      background: #f2eee5;
+      color: var(--ink);
+      font: 12px/1.5 "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
   </style>
 </head>
 <body>
@@ -960,6 +972,7 @@
         <button id="showManualPage" type="button">手动校核页</button>
         <button id="showDeepPage" type="button">深度计算页</button>
         <button id="showMantraPage" type="button">工程口诀</button>
+        <button id="showProfilePage" type="button">入口曲线页</button>
       </nav>
       <div class="global-units">
         <span>压力单位</span>
@@ -1405,6 +1418,71 @@
     </section>
   </main>
 
+  <main id="profilePage" class="page single-page hidden">
+    <aside class="panel controls">
+      <div class="section-title">入口曲线生成</div>
+      <p class="hint">直锥入口加工简单，但曲率突变和较高壁面角更容易带来入口局部损失。曲线漏斗用零斜率端点的光顺收缩曲线，通常能降低分离和压损。</p>
+      <div class="target-form">
+        <label class="target-field">
+          <span class="label-row"><span>入口段直径</span><span class="unit">mm</span></span>
+          <input id="profileInletMm" type="number" min="1" max="50" step="0.01" value="3.50">
+        </label>
+        <label class="target-field">
+          <span class="label-row"><span>喉径</span><span class="unit">mm</span></span>
+          <input id="profileThroatMm" type="number" min="0.2" max="15" step="0.01" value="1.10">
+        </label>
+        <label class="target-field">
+          <span class="label-row"><span>收缩段长度</span><span class="unit">mm</span></span>
+          <input id="profileLengthMm" type="number" min="1" max="80" step="0.01" value="8.00">
+        </label>
+        <label class="target-field">
+          <span class="label-row"><span>进水量</span><span class="unit">L/min</span></span>
+          <input id="profileFlowLpm" type="number" min="0.05" max="12" step="0.01" value="0.60">
+        </label>
+        <label class="target-field">
+          <span class="label-row"><span>曲线光顺指数</span><span class="unit">p</span></span>
+          <input id="profilePower" type="number" min="1.2" max="6" step="0.1" value="2.6">
+        </label>
+        <label class="target-field">
+          <span class="label-row"><span>生成点数</span><span class="unit">个</span></span>
+          <input id="profilePointCount" type="number" min="8" max="96" step="1" value="32">
+        </label>
+      </div>
+      <button class="primary-button" id="runProfileCalc" type="button">生成入口曲线</button>
+      <button class="secondary-button" id="copyProfileCoords" type="button">复制曲线坐标</button>
+    </aside>
+
+    <section class="workbench">
+      <section class="panel output-panel">
+        <div class="section-title">锥形 vs 曲线效率对比</div>
+        <div class="metrics" id="profileMetrics"></div>
+      </section>
+
+      <section class="panel canvas-panel">
+        <div class="section-title">入口轮廓对比图</div>
+        <div class="canvas-wrap">
+          <canvas id="profileCanvas"></canvas>
+        </div>
+        <div class="legend">
+          <span><i class="swatch" style="background:#d64545"></i>直锥入口</span>
+          <span><i class="swatch" style="background:#22a06b"></i>曲线漏斗</span>
+          <span><i class="swatch" style="background:#2f80ed"></i>局部壁面角</span>
+        </div>
+      </section>
+
+      <section class="panel output-panel">
+        <div class="section-title">生成坐标</div>
+        <textarea class="coordinate-output" id="profileCoords" readonly></textarea>
+        <p class="hint">坐标为轴向 x 与半径 r，单位 mm。用于 CAD 旋转成型时，建议将这些点作为内流道母线，再用样条曲线拟合。</p>
+      </section>
+
+      <section class="panel output-panel">
+        <div class="section-title">公式与说明</div>
+        <div class="formula-list" id="profileFormulaList"></div>
+      </section>
+    </section>
+  </main>
+
   <p class="footer-note">提示：该网页把气液混合、压恢复和出口射流简化为工程趋势模型。若用于真实设备，请用样机测试标定流量系数、局部损失系数、扩散段分离边界和材料承压裕度。</p>
 
   <script>
@@ -1456,6 +1534,14 @@
         bubbleDiameterMm: 1.5,
         useAirExpansion: true,
         useTwoPhaseDensity: true
+      },
+      profileValues: {
+        inletMm: 3.5,
+        throatMm: 1.1,
+        lengthMm: 8,
+        flowLpm: 0.6,
+        power: 2.6,
+        pointCount: 32
       }
     };
 
@@ -1605,7 +1691,7 @@
     let deepResult = null;
     let particleSeed = 0;
     let activePage = "sim";
-    const pageStatusHtml = { sim: "", target: "", manual: "", deep: "" };
+    const pageStatusHtml = { sim: "", target: "", manual: "", deep: "", profile: "" };
 
     const KG_PRESSURE_KPA = 98.0665;
     const enText = {
@@ -1616,6 +1702,7 @@
       "手动校核页": "Manual Check",
       "深度计算页": "Deep 1D",
       "工程口诀": "Field Notes",
+      "入口曲线页": "Inlet Curve",
       "压力单位": "Pressure unit",
       "公斤压力": "kgf/cm²",
       "应用模型": "Application Model",
@@ -1686,6 +1773,20 @@
       "文丘里 / 微纳米气泡工程口诀": "Venturi / Micro-nano Bubble Field Notes",
       "贴实验室墙上的版本": "Lab Wall Version",
       "提示：该网页把气液混合、压恢复和出口射流简化为工程趋势模型。若用于真实设备，请用样机测试标定流量系数、局部损失系数、扩散段分离边界和材料承压裕度。": "Note: this page simplifies gas-liquid mixing, pressure recovery, and outlet jet behavior into an engineering trend model. For real equipment, calibrate flow coefficients, local losses, diffuser separation, and material pressure margins with prototypes.",
+      "入口曲线生成": "Inlet Curve Generator",
+      "直锥入口加工简单，但曲率突变和较高壁面角更容易带来入口局部损失。曲线漏斗用零斜率端点的光顺收缩曲线，通常能降低分离和压损。": "A conical inlet is easy to machine, but curvature discontinuity and higher wall angle can increase local inlet loss. A smooth funnel curve uses near-zero-slope endpoints and usually reduces separation and pressure loss.",
+      "收缩段长度": "Contraction length",
+      "曲线光顺指数": "Curve smoothness exponent",
+      "生成点数": "Generated points",
+      "生成入口曲线": "Generate Inlet Curve",
+      "复制曲线坐标": "Copy Curve Coordinates",
+      "锥形 vs 曲线效率对比": "Cone vs Curve Efficiency",
+      "入口轮廓对比图": "Inlet Profile Comparison",
+      "直锥入口": "Conical inlet",
+      "曲线漏斗": "Curved funnel",
+      "局部壁面角": "Local wall angle",
+      "生成坐标": "Generated Coordinates",
+      "坐标为轴向 x 与半径 r，单位 mm。用于 CAD 旋转成型时，建议将这些点作为内流道母线，再用样条曲线拟合。": "Coordinates are axial x and radius r in mm. For CAD revolve features, use these points as the internal flow-path generatrix and fit with a spline.",
       "中文": "中文",
       "低压区": "Low pressure",
       "可吸气": "Suction OK",
@@ -1721,6 +1822,10 @@
       "分段含气率": "Segmented void fraction",
       "分段空化裕度": "Segmented cavitation margin",
       "分段背压与逆流": "Segmented back-pressure and reverse-flow checks",
+      "入口曲线半径": "Inlet curve radius",
+      "局部壁面角": "Local wall angle",
+      "入口局部损失": "Inlet local loss",
+      "入口效率": "Inlet efficiency",
       "水流量 Q 由截面积 A 和平均速度 v 决定，用于入口、喉部和出口速度计算。": "Water flow Q is determined by area A and mean velocity v, used for inlet, throat, and outlet velocity calculations.",
       "用水密度、速度、直径和黏度判断流动状态，并选择摩擦因子估算方式。": "Uses water density, velocity, diameter, and viscosity to identify flow regime and estimate friction factor.",
       "用于估算喉部沿程损失，粗糙度越大损失越高。": "Used to estimate throat friction loss; higher roughness increases loss.",
@@ -1746,6 +1851,10 @@
       "按滑移比修正后的局部空气体积流量和水流量估算每个节点的空气体积分数。": "Estimates node void fraction from slip-corrected local air volume flow and water flow.",
       "逐节点比较局部绝压和水蒸气压，定位最接近空化的区域。": "Compares local absolute pressure against water vapor pressure at each node to locate cavitation-prone regions.",
       "出口段压力不足会触发背压失败；喉部/混合段压力高于空气入口压力会提示逆流风险。": "Insufficient outlet pressure triggers back-pressure failure; throat/mixing pressure above air inlet pressure indicates reverse-flow risk.",
+      "曲线漏斗采用双端光顺的 S 型收缩函数，入口和喉部连接处壁面斜率更柔和。": "The curved funnel uses a smoothed S contraction function, giving gentler wall slope at both inlet and throat junctions.",
+      "最大壁面角越大，越容易产生分离、局部损失和喉前流速畸变。": "A larger maximum wall angle increases the chance of separation, local loss, and pre-throat velocity distortion.",
+      "用喉部速度动压和经验损失系数估算入口收缩段压损，曲线轮廓通常取更低 K 值。": "Uses throat dynamic pressure and empirical loss coefficient to estimate contraction loss; curved profiles usually use lower K.",
+      "用局部损失系数给出相对效率指标，适合比较轮廓，不等同于实测效率。": "Gives a relative efficiency metric from local loss coefficient. It is for profile comparison, not measured efficiency.",
       "第三方模型参数会直接影响自动搜索、手动校核、风险阈值和几何角度范围。": "Third-party model parameters directly affect auto search, manual checks, risk thresholds, and geometry angle ranges.",
       "小型水气混合": "Compact water-air mixing",
       "水处理曝气": "Water treatment aeration",
@@ -1827,6 +1936,18 @@
       "搜索组合数": "Searched combinations",
       "总长度": "Total length",
       "出口节点表压": "Outlet node gauge pressure",
+      "直锥损失系数": "Cone loss coefficient",
+      "曲线损失系数": "Curve loss coefficient",
+      "压损降低": "Pressure loss reduction",
+      "效率提升": "Efficiency gain",
+      "直锥最大壁面角": "Cone max wall angle",
+      "曲线最大壁面角": "Curve max wall angle",
+      "直锥压损": "Cone pressure loss",
+      "曲线压损": "Curve pressure loss",
+      "出口喉部速度": "Throat exit velocity",
+      "推荐判断": "Recommendation",
+      "曲线更优": "Curve preferred",
+      "锥形可接受": "Cone acceptable",
       "开启": "On",
       "关闭": "Off",
       "入口段": "Inlet",
@@ -1922,14 +2043,19 @@
       mixtureDensity: ["两相混合密度", "ρ_mix = α · ρ_air + (1 - α) · ρ_water", "开启两相密度修正时，用局部含气率估算混合密度，用于趋势校核。"],
       deepVoidFraction: ["分段含气率", "α(x) = Q_air,effective(x) / [Q_air,effective(x) + Q_water]", "按滑移比修正后的局部空气体积流量和水流量估算每个节点的空气体积分数。"],
       deepCavitation: ["分段空化裕度", "margin(x) = p(x) - p_vapor(T_water)", "逐节点比较局部绝压和水蒸气压，定位最接近空化的区域。"],
-      deepBackReverse: ["分段背压与逆流", "p_out,available ≥ p_back,abs；p_mix ≤ p_air,in", "出口段压力不足会触发背压失败；喉部/混合段压力高于空气入口压力会提示逆流风险。"]
+      deepBackReverse: ["分段背压与逆流", "p_out,available ≥ p_back,abs；p_mix ≤ p_air,in", "出口段压力不足会触发背压失败；喉部/混合段压力高于空气入口压力会提示逆流风险。"],
+      profileCurve: ["入口曲线半径", "r(x)=r_t+(r_in-r_t)·[1-S_p(x/L)]", "曲线漏斗采用双端光顺的 S 型收缩函数，入口和喉部连接处壁面斜率更柔和。"],
+      profileAngle: ["局部壁面角", "θ(x)=atan(|dr/dx|)", "最大壁面角越大，越容易产生分离、局部损失和喉前流速畸变。"],
+      profileLoss: ["入口局部损失", "Δp=K_in·0.5ρv_t²", "用喉部速度动压和经验损失系数估算入口收缩段压损，曲线轮廓通常取更低 K 值。"],
+      profileEfficiency: ["入口效率", "η_in=1/(1+K_in)", "用局部损失系数给出相对效率指标，适合比较轮廓，不等同于实测效率。"]
     };
 
     const pageFormulas = {
       sim: ["continuity", "reynolds", "friction", "bernoulli", "throat", "autoAngles", "recovery", "air", "critical", "airPortPosition", "gasRatio", "voidFraction", "cavitation", "backPressure", "reverse"],
       target: ["continuity", "reynolds", "friction", "bernoulli", "throat", "autoAngles", "recovery", "air", "critical", "airPortPosition", "targetSearch", "gasRatio", "voidFraction", "cavitation", "backPressure", "reverse"],
       manual: ["continuity", "reynolds", "friction", "bernoulli", "throat", "recovery", "air", "critical", "airPortPosition", "gasRatio", "voidFraction", "cavitation", "backPressure", "reverse", "manualAngles"],
-      deep: ["continuity", "reynolds", "friction", "segmentedContinuity", "segmentedBernoulli", "air", "critical", "airExpansion", "slipRatio", "mixtureDensity", "deepVoidFraction", "deepCavitation", "deepBackReverse", "airPortPosition", "manualAngles"]
+      deep: ["continuity", "reynolds", "friction", "segmentedContinuity", "segmentedBernoulli", "air", "critical", "airExpansion", "slipRatio", "mixtureDensity", "deepVoidFraction", "deepCavitation", "deepBackReverse", "airPortPosition", "manualAngles"],
+      profile: ["continuity", "profileCurve", "profileAngle", "profileLoss", "profileEfficiency"]
     };
 
     function fieldDisplay(base) {
@@ -2517,6 +2643,7 @@
       renderFormulaList("targetFormulaList", pageFormulas.target);
       renderFormulaList("manualFormulaList", pageFormulas.manual);
       renderFormulaList("deepFormulaList", pageFormulas.deep);
+      renderFormulaList("profileFormulaList", pageFormulas.profile);
     }
 
     function renderModelToggles() {
@@ -3025,6 +3152,140 @@
         ctx.fillText(s.label, pad.l + i * 90 + 24, 13);
       });
       ctx.textAlign = "left";
+    }
+
+    function profileShapeS(t, power) {
+      const a = Math.pow(Math.max(0, t), power);
+      const b = Math.pow(Math.max(0, 1 - t), power);
+      return a / Math.max(1e-9, a + b);
+    }
+
+    function evaluateInletProfile() {
+      const inletMm = clamp(Number(document.getElementById("profileInletMm").value), 1, 50);
+      const throatMm = clamp(Number(document.getElementById("profileThroatMm").value), 0.2, Math.max(0.21, inletMm - 0.01));
+      const lengthMm = clamp(Number(document.getElementById("profileLengthMm").value), 1, 80);
+      const flowLpm = clamp(Number(document.getElementById("profileFlowLpm").value), 0.05, 12);
+      const power = clamp(Number(document.getElementById("profilePower").value), 1.2, 6);
+      const pointCount = Math.round(clamp(Number(document.getElementById("profilePointCount").value), 8, 96));
+      const rIn = inletMm / 2;
+      const rTh = throatMm / 2;
+      const q = flowLpm / 60000;
+      const vTh = q / Math.max(1e-9, areaFromDiameterMm(throatMm));
+      const rho = waterDensity(state.values.waterTempC);
+      const coneAngleDeg = Math.atan(Math.max(0, rIn - rTh) / Math.max(0.001, lengthMm)) * 180 / Math.PI;
+      const points = [];
+      let maxCurveAngleDeg = 0;
+      for (let i = 0; i < pointCount; i++) {
+        const t = pointCount === 1 ? 0 : i / (pointCount - 1);
+        const x = t * lengthMm;
+        const s = profileShapeS(t, power);
+        const r = rIn + (rTh - rIn) * s;
+        const dt = 1 / Math.max(1, pointCount - 1);
+        const s0 = profileShapeS(clamp(t - dt, 0, 1), power);
+        const s1 = profileShapeS(clamp(t + dt, 0, 1), power);
+        const drdx = ((rIn + (rTh - rIn) * s1) - (rIn + (rTh - rIn) * s0)) / Math.max(1e-6, (Math.min(1, t + dt) - Math.max(0, t - dt)) * lengthMm);
+        const localAngleDeg = Math.atan(Math.abs(drdx)) * 180 / Math.PI;
+        maxCurveAngleDeg = Math.max(maxCurveAngleDeg, localAngleDeg);
+        points.push({ x, r, diameter: r * 2, localAngleDeg });
+      }
+      const areaRatio = Math.pow(throatMm / Math.max(0.001, inletMm), 2);
+      const coneK = 0.035 + 0.018 * Math.pow(coneAngleDeg, 1.25) + 0.16 * Math.pow(1 - areaRatio, 1.6);
+      const curveSmoothFactor = clamp(0.48 + 0.06 * Math.max(0, maxCurveAngleDeg - 12) + 0.015 * Math.abs(power - 2.6), 0.42, 0.82);
+      const curveK = coneK * curveSmoothFactor;
+      const coneLossKpa = coneK * 0.5 * rho * vTh * vTh / 1000;
+      const curveLossKpa = curveK * 0.5 * rho * vTh * vTh / 1000;
+      const coneEfficiency = 1 / (1 + coneK);
+      const curveEfficiency = 1 / (1 + curveK);
+      const improvementPct = (curveEfficiency / Math.max(1e-6, coneEfficiency) - 1) * 100;
+      const lossReductionPct = (1 - curveLossKpa / Math.max(1e-6, coneLossKpa)) * 100;
+      return { inletMm, throatMm, lengthMm, flowLpm, power, pointCount, rIn, rTh, vTh, coneAngleDeg, maxCurveAngleDeg, coneK, curveK, coneLossKpa, curveLossKpa, coneEfficiency, curveEfficiency, improvementPct, lossReductionPct, points };
+    }
+
+    function drawProfileCanvas(result) {
+      const canvas = document.getElementById("profileCanvas");
+      const { ctx, w, h } = resizeCanvas(canvas);
+      ctx.clearRect(0, 0, w, h);
+      const pad = { l: 56, r: 36, t: 42, b: 54 };
+      const plotW = Math.max(1, w - pad.l - pad.r);
+      const cy = h / 2;
+      const maxR = Math.max(result.rIn, result.rTh, 0.5);
+      const scaleY = Math.min((h - pad.t - pad.b) / (2.2 * maxR), 34);
+      const xAt = (x) => pad.l + x / result.lengthMm * plotW;
+      const yTop = (r) => cy - r * scaleY;
+      const yBot = (r) => cy + r * scaleY;
+      ctx.strokeStyle = "rgba(23,23,23,0.16)";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(pad.l, cy);
+      ctx.lineTo(w - pad.r, cy);
+      ctx.stroke();
+
+      const drawProfile = (points, color, width) => {
+        ctx.strokeStyle = color;
+        ctx.lineWidth = width;
+        ctx.beginPath();
+        points.forEach((p, i) => {
+          const x = xAt(p.x);
+          const y = yTop(p.r);
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        });
+        points.slice().reverse().forEach((p) => ctx.lineTo(xAt(p.x), yBot(p.r)));
+        ctx.closePath();
+        ctx.stroke();
+      };
+      const conePoints = result.points.map((p) => ({
+        x: p.x,
+        r: result.rIn + (result.rTh - result.rIn) * (p.x / result.lengthMm)
+      }));
+      drawProfile(conePoints, "#d64545", 2);
+      drawProfile(result.points, "#22a06b", 3);
+
+      ctx.fillStyle = "#5f5b53";
+      ctx.font = "12px sans-serif";
+      ctx.fillText(`${tx("入口段直径")} ${fmtMm(result.inletMm)} mm`, pad.l, pad.t - 14);
+      ctx.textAlign = "right";
+      ctx.fillText(`${tx("喉径")} ${fmtMm(result.throatMm)} mm`, w - pad.r, pad.t - 14);
+      ctx.textAlign = "left";
+      ctx.fillText(`${tx("收缩段长度")} ${fmtMm(result.lengthMm)} mm`, pad.l, h - 18);
+
+      const peak = result.points.reduce((best, p) => p.localAngleDeg > best.localAngleDeg ? p : best, result.points[0]);
+      const px = xAt(peak.x);
+      ctx.strokeStyle = "#2f80ed";
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(px, yTop(peak.r) - 18);
+      ctx.lineTo(px, yBot(peak.r) + 18);
+      ctx.stroke();
+      ctx.fillStyle = "#2f80ed";
+      ctx.fillText(`${tx("局部壁面角")} ${fmt(result.maxCurveAngleDeg, 1)} deg`, Math.min(px + 8, w - 180), yTop(peak.r) - 22);
+    }
+
+    function updateProfile() {
+      const result = evaluateInletProfile();
+      const statusHtml = [
+        ["直锥损失系数", fmt(result.coneK, 3), result.coneK > 0.55 ? "warn" : "good"],
+        ["曲线损失系数", fmt(result.curveK, 3), "good"],
+        ["压损降低", `${fmt(result.lossReductionPct, 1)}%`, result.lossReductionPct > 15 ? "good" : "warn"],
+        ["推荐判断", result.lossReductionPct > 10 ? "曲线更优" : "锥形可接受", result.lossReductionPct > 10 ? "good" : "warn"]
+      ].map(([label, value, cls]) => statusCardHtml(label, value, cls, null)).join("");
+      setPageStatus("profile", statusHtml);
+      document.getElementById("profileMetrics").innerHTML = metricHtml([
+        ["入口段直径", `${fmtMm(result.inletMm)} mm`],
+        ["喉径", `${fmtMm(result.throatMm)} mm`],
+        ["收缩段长度", `${fmtMm(result.lengthMm)} mm`],
+        ["出口喉部速度", `${fmt(result.vTh)} m/s`],
+        ["直锥最大壁面角", `${fmt(result.coneAngleDeg, 1)} deg`],
+        ["曲线最大壁面角", `${fmt(result.maxCurveAngleDeg, 1)} deg`],
+        ["直锥压损", fmtPressure(result.coneLossKpa, "delta")],
+        ["曲线压损", fmtPressure(result.curveLossKpa, "delta")],
+        ["效率提升", `${fmt(result.improvementPct, 1)}%`]
+      ]);
+      document.getElementById("profileCoords").value = [
+        "x_mm,r_mm,diameter_mm,local_wall_angle_deg",
+        ...result.points.map((p) => `${p.x.toFixed(3)},${p.r.toFixed(3)},${p.diameter.toFixed(3)},${p.localAngleDeg.toFixed(2)}`)
+      ].join("\n");
+      drawProfileCanvas(result);
     }
 
     function renderDeepResult(result) {
@@ -3890,17 +4151,20 @@ ${formulaMarkdown(pageFormulas.deep)}
       const isManual = page === "manual";
       const isDeep = page === "deep";
       const isMantra = page === "mantra";
+      const isProfile = page === "profile";
       activePage = page;
       document.getElementById("simPage").classList.toggle("hidden", !isSim);
       document.getElementById("targetPage").classList.toggle("hidden", !isTarget);
       document.getElementById("manualPage").classList.toggle("hidden", !isManual);
       document.getElementById("deepPage").classList.toggle("hidden", !isDeep);
       document.getElementById("mantraPage").classList.toggle("hidden", !isMantra);
+      document.getElementById("profilePage").classList.toggle("hidden", !isProfile);
       document.getElementById("showSimPage").classList.toggle("active", isSim);
       document.getElementById("showTargetPage").classList.toggle("active", isTarget);
       document.getElementById("showManualPage").classList.toggle("active", isManual);
       document.getElementById("showDeepPage").classList.toggle("active", isDeep);
       document.getElementById("showMantraPage").classList.toggle("active", isMantra);
+      document.getElementById("showProfilePage").classList.toggle("active", isProfile);
       const activeStatusHtml = pageStatusHtml[page] || "";
       const dock = document.getElementById("headerStatusDock");
       dock.innerHTML = activeStatusHtml;
@@ -3909,6 +4173,7 @@ ${formulaMarkdown(pageFormulas.deep)}
       if (isTarget && targetSolution) drawTargetPipe(targetSolution);
       if (isManual) updateManual();
       if (isDeep) updateDeep();
+      if (isProfile) updateProfile();
       if (isSim) update();
     }
 
@@ -4034,6 +4299,7 @@ ${formulaMarkdown(pageFormulas.deep)}
       if (!targetSolution) renderTargetSolution(solveSuctionTarget());
       if (manualResult) updateManual();
       if (deepResult) updateDeep();
+      if (activePage === "profile") updateProfile();
       const activeStatusHtml = pageStatusHtml[activePage] || "";
       const dock = document.getElementById("headerStatusDock");
       dock.innerHTML = activeStatusHtml;
@@ -4070,6 +4336,7 @@ ${formulaMarkdown(pageFormulas.deep)}
     document.getElementById("showManualPage").addEventListener("click", () => showPage("manual"));
     document.getElementById("showDeepPage").addEventListener("click", () => showPage("deep"));
     document.getElementById("showMantraPage").addEventListener("click", () => showPage("mantra"));
+    document.getElementById("showProfilePage").addEventListener("click", () => showPage("profile"));
 
     document.getElementById("solveSuctionTarget").addEventListener("click", () => {
       renderTargetSolution(solveSuctionTarget());
@@ -4145,9 +4412,24 @@ ${formulaMarkdown(pageFormulas.deep)}
     document.getElementById("runDeepCalc").addEventListener("click", () => updateDeep());
     document.getElementById("downloadDeepMarkdown").addEventListener("click", () => downloadDeepMarkdown());
 
+    ["profileInletMm", "profileThroatMm", "profileLengthMm", "profileFlowLpm", "profilePower", "profilePointCount"].forEach((id) => {
+      document.getElementById(id).addEventListener("input", () => updateProfile());
+      document.getElementById(id).addEventListener("change", () => updateProfile());
+    });
+    document.getElementById("runProfileCalc").addEventListener("click", () => updateProfile());
+    document.getElementById("copyProfileCoords").addEventListener("click", async () => {
+      const text = document.getElementById("profileCoords").value;
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch (error) {
+        document.getElementById("profileCoords").select();
+      }
+    });
+
     window.addEventListener("resize", () => {
       update();
       if (deepResult) drawDeepCurves(deepResult);
+      if (activePage === "profile") updateProfile();
     });
 
     renderFields();
