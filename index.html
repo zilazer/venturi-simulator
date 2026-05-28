@@ -1585,27 +1585,30 @@
       recovery: ["扩散段压恢复", "p_out,free = p_t + η_r · 0.5ρ(v_t²-v_out²) - Δp_diffuser", "扩散角、粗糙度和模型类型会影响压恢复效率和扩散段损失。"],
       air: ["空气孔口流量", "ṁ = C_d · A · p0 · f(p2/p0, γ, R, T)", "按简化可压缩孔口流估算吸入空气量或反算空气入口等效直径。"],
       critical: ["临界流判断", "p2/p0 ≤ (2/(γ+1))^(γ/(γ-1))", "当压比低于临界值时，空气入口可能达到临界流，进气量不再线性增加。"],
+      autoAngles: ["自动角度估算", "θ_c, θ_d = f(D_t/D_in, D_t/D_out, v_t, p_in, p_back, R_g, ε)", "自动仿真和目标反算页会按流速、压差、气水比、粗糙度和模型配置估算收缩半角与扩散半角。"],
+      targetSearch: ["目标反算搜索", "min score(d_t, p_in)；约束：吸气成立、无逆流、背压可克服、空化裕度达标", "目标反算页枚举入口压力和喉径，并按压损、进气孔径、入口直径偏差、气水比和空化裕度选择最优可行方案。"],
       gasRatio: ["气水比", "R_g = Q_air / Q_water", "用于表示进气强度，并参与含气率和模型风险提示。"],
       voidFraction: ["估算含气率", "α = Q_air / (Q_air + Q_water)", "用体积流量近似估算出口混合流中的空气体积分数。"],
       cavitation: ["空化裕度", "NPS margin = p_t - p_vapor(T_water)", "喉部绝压越接近水蒸气压，空化风险越高。"],
       backPressure: ["背压判定", "p_out,free ≥ p_back,abs", "出口可用压力必须高于设定背压，否则出口流动不成立。"],
-      reverse: ["逆流判定", "p_mix > p_air,in", "混合段压力高于空气入口压力时，径向进气口可能倒灌/逆流。"],
+      reverse: ["逆流判定", "p_mix > p_air,in + 1 kPa", "混合段压力高于空气入口压力并超过约 1 kPa 判定裕度时，径向进气口可能倒灌/逆流。"],
       manualAngles: ["手动角度损失", "K_c = f(θ_c)，η_r 与 K_d = f(θ_d)", "手动校核页使用用户输入的收缩半角和扩散半角，不自动推荐角度。"],
       airPortPosition: ["进气口轴线位置", "η_air = f(x_air / L_throat)", "进气口越接近喉部低压核心，负压利用越充分；偏离喉部会降低吸气效率并提高倒灌敏感性。"],
-      segmentedContinuity: ["分段连续方程", "v(x) = [Q_water + Q_air(x)] / A(x)", "深度页把文丘里沿轴向离散成多个节点，用每个节点直径计算局部混合流速。"],
-      segmentedBernoulli: ["分段伯努利压降", "p(x_i) = p(x_{i-1}) - Δp_acc - Δp_loss + Δp_recovery", "沿入口、收缩、喉部、扩散和出口分段估算加速压降、摩擦损失和扩散压恢复。"],
+      segmentedContinuity: ["分段连续方程", "v(x) = Q_mix(x) / A(x)", "深度页把文丘里沿轴向离散成多个节点；开启两相密度修正时 Q_mix 取水量加局部空气体积量，关闭时只按水量估速。"],
+      segmentedBernoulli: ["分段压力趋势", "p(x) = interp[p_in, p_t, p_mix, p_out]", "深度页第一版不做逐段递推求解，而是在入口、收缩、喉部、扩散和出口锚点之间做分段压力插值趋势校核。"],
       airExpansion: ["空气体积膨胀", "Q_air(x) = Q_air,in · p_air,in / p(x)", "开启空气膨胀修正时，压力越低空气体积流量越大，含气率也会升高。"],
+      slipRatio: ["滑移比修正", "Q_air,effective(x) = Q_air(x) / S", "深度页用滑移比 S 简化气液相对速度影响，S 越大，参与局部含气率计算的等效空气体积越小。"],
       mixtureDensity: ["两相混合密度", "ρ_mix = α · ρ_air + (1 - α) · ρ_water", "开启两相密度修正时，用局部含气率估算混合密度，用于趋势校核。"],
-      deepVoidFraction: ["分段含气率", "α(x) = Q_air(x) / [Q_air(x) + Q_water]", "按局部空气体积流量和水流量估算每个节点的空气体积分数。"],
+      deepVoidFraction: ["分段含气率", "α(x) = Q_air,effective(x) / [Q_air,effective(x) + Q_water]", "按滑移比修正后的局部空气体积流量和水流量估算每个节点的空气体积分数。"],
       deepCavitation: ["分段空化裕度", "margin(x) = p(x) - p_vapor(T_water)", "逐节点比较局部绝压和水蒸气压，定位最接近空化的区域。"],
       deepBackReverse: ["分段背压与逆流", "p_out,available ≥ p_back,abs；p_mix ≤ p_air,in", "出口段压力不足会触发背压失败；喉部/混合段压力高于空气入口压力会提示逆流风险。"]
     };
 
     const pageFormulas = {
-      sim: ["continuity", "reynolds", "friction", "bernoulli", "throat", "recovery", "air", "critical", "airPortPosition", "gasRatio", "voidFraction", "cavitation", "backPressure", "reverse"],
-      target: ["continuity", "reynolds", "friction", "bernoulli", "throat", "recovery", "air", "critical", "airPortPosition", "gasRatio", "voidFraction", "cavitation", "backPressure", "reverse"],
+      sim: ["continuity", "reynolds", "friction", "bernoulli", "throat", "autoAngles", "recovery", "air", "critical", "airPortPosition", "gasRatio", "voidFraction", "cavitation", "backPressure", "reverse"],
+      target: ["continuity", "reynolds", "friction", "bernoulli", "throat", "autoAngles", "recovery", "air", "critical", "airPortPosition", "targetSearch", "gasRatio", "voidFraction", "cavitation", "backPressure", "reverse"],
       manual: ["continuity", "reynolds", "friction", "bernoulli", "throat", "recovery", "air", "critical", "airPortPosition", "gasRatio", "voidFraction", "cavitation", "backPressure", "reverse", "manualAngles"],
-      deep: ["continuity", "reynolds", "friction", "segmentedContinuity", "segmentedBernoulli", "air", "critical", "airExpansion", "mixtureDensity", "deepVoidFraction", "deepCavitation", "deepBackReverse", "airPortPosition", "manualAngles"]
+      deep: ["continuity", "reynolds", "friction", "segmentedContinuity", "segmentedBernoulli", "air", "critical", "airExpansion", "slipRatio", "mixtureDensity", "deepVoidFraction", "deepCavitation", "deepBackReverse", "airPortPosition", "manualAngles"]
     };
 
     function fieldDisplay(base) {
