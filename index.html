@@ -56,7 +56,7 @@
       backdrop-filter: blur(12px);
     }
 
-    body.manual-status-active header {
+    body.header-status-active header {
       display: grid;
       grid-template-columns: minmax(420px, 1fr) minmax(520px, 760px);
       gap: 16px 24px;
@@ -394,6 +394,10 @@
       display: none;
     }
 
+    .inline-status {
+      display: none;
+    }
+
     .header-status-dock {
       align-self: end;
       display: grid;
@@ -708,6 +712,10 @@
       margin-bottom: 18px;
     }
 
+    .solution-hero.inline-status {
+      display: none;
+    }
+
     .solution-actions {
       display: flex;
       gap: 10px;
@@ -846,7 +854,7 @@
     }
 
     @media (max-width: 1120px) {
-      body.manual-status-active header {
+      body.header-status-active header {
         grid-template-columns: 1fr;
       }
 
@@ -913,7 +921,7 @@
         </div>
       </div>
     </div>
-    <div class="header-status-dock hidden" id="manualHeaderStatusDock" aria-live="polite"></div>
+    <div class="header-status-dock hidden" id="headerStatusDock" aria-live="polite"></div>
   </header>
 
   <main id="simPage" class="page">
@@ -953,7 +961,7 @@
     </aside>
 
     <section class="workbench">
-      <div class="status-strip" id="statusStrip"></div>
+      <div class="status-strip inline-status" id="statusStrip"></div>
 
       <div class="grid-two">
         <section class="panel output-panel">
@@ -1044,7 +1052,7 @@
     <section class="workbench">
       <section class="panel output-panel">
         <div class="section-title">目标反算结果</div>
-        <div class="solution-hero" id="solutionHero"></div>
+        <div class="solution-hero inline-status" id="solutionHero"></div>
         <div class="metrics" id="targetSolutionMetrics"></div>
         <div class="solution-actions">
           <button class="secondary-button" id="applyTargetSolution" type="button" disabled>应用到仿真页</button>
@@ -1094,7 +1102,7 @@
     </aside>
 
     <section class="workbench">
-      <div class="status-strip manual-inline-status" id="manualStatusStrip"></div>
+      <div class="status-strip inline-status manual-inline-status" id="manualStatusStrip"></div>
 
       <div class="grid-two">
         <section class="panel output-panel">
@@ -1173,7 +1181,7 @@
     </aside>
 
     <section class="workbench">
-      <div class="status-strip" id="deepStatusStrip"></div>
+      <div class="status-strip inline-status" id="deepStatusStrip"></div>
 
       <section class="panel output-panel">
         <div class="section-title">深度计算摘要</div>
@@ -1546,6 +1554,8 @@
     let manualResult = null;
     let deepResult = null;
     let particleSeed = 0;
+    let activePage = "sim";
+    const pageStatusHtml = { sim: "", target: "", manual: "", deep: "" };
 
     const KG_PRESSURE_KPA = 98.0665;
     const pressureKinds = {
@@ -2291,6 +2301,16 @@
       `;
     }
 
+    function setPageStatus(page, html) {
+      pageStatusHtml[page] = html;
+      if (activePage === page) {
+        const dock = document.getElementById("headerStatusDock");
+        dock.innerHTML = html;
+        dock.classList.toggle("hidden", !html);
+        document.body.classList.toggle("header-status-active", Boolean(html));
+      }
+    }
+
     function renderOutputs(result) {
       const statusClass = classify(result);
       const suctionText = result.reverse ? "进气口逆流" : result.suction ? "可吸气" : "无法吸气";
@@ -2298,12 +2318,14 @@
       const model = getModelConfig();
       const cavText = result.cavitationMarginKpa < model.cavitationBadKpa ? "空化风险高" : result.cavitationMarginKpa < model.cavitationWarnKpa ? "接近空化" : "空化裕度足";
       const mixText = result.gasRatio > model.gasRatioWarn ? "气水比过高" : result.gasRatio > model.gasRatioHigh ? "高含气混合" : "常规混合";
-      document.getElementById("statusStrip").innerHTML = [
+      const statusHtml = [
         ["吸气状态", suctionText, result.reverse ? "bad" : result.suction ? "good" : "warn"],
         ["出口背压", backText, result.backOk ? "good" : "bad"],
         ["空化判断", cavText, result.cavitationMarginKpa < model.cavitationBadKpa ? "bad" : result.cavitationMarginKpa < model.cavitationWarnKpa ? "warn" : "good"],
         ["混合强度", mixText, result.gasRatio > model.gasRatioWarn ? "warn" : "good"]
       ].map(([label, value, cls]) => statusCardHtml(label, value, cls, result)).join("");
+      document.getElementById("statusStrip").innerHTML = statusHtml;
+      setPageStatus("sim", statusHtml);
 
       const advice = geometryAdvice(result);
       document.getElementById("geometryMetrics").innerHTML = metricHtml([
@@ -2360,7 +2382,7 @@
         stepButton.disabled = true;
         mdButton.disabled = true;
         manualButton.disabled = true;
-        hero.innerHTML = [
+        const failureStatusHtml = [
           ["搜索状态", "未找到可进气方案", "bad"],
           ["已测试组合", `${solution.tested}`, "warn"],
           ["建议", "提高入口压力或放宽孔径", "warn"]
@@ -2370,6 +2392,8 @@
             <div class="status-value">${value}</div>
           </div>
         `).join("");
+        hero.innerHTML = failureStatusHtml;
+        setPageStatus("target", failureStatusHtml);
         metrics.innerHTML = "";
         risks.innerHTML = [
           `<div class="risk bad">在最高入口压力 ${fmtPressure(solution.maxInlet, "gauge")}、最大进气口 ${fmtMm(solution.maxAirPort)} mm 的限制下，没有找到同时满足可吸气、无逆流、背压可克服和空化裕度的组合。</div>`,
@@ -2385,7 +2409,7 @@
       mdButton.disabled = false;
       manualButton.disabled = false;
       const result = solution.result;
-      hero.innerHTML = [
+      const targetStatusHtml = [
         ["搜索状态", "找到可进气方案", "good"],
         ["推荐入口压力", fmtPressure(result.inletGaugeKpa, "gauge"), "good"],
         ["推荐进气孔", `${fmtMm(result.airPortMm)} mm`, "good"]
@@ -2395,6 +2419,8 @@
           <div class="status-value">${value}</div>
         </div>
       `).join("");
+      hero.innerHTML = targetStatusHtml;
+      setPageStatus("target", targetStatusHtml);
       const targetAdvice = geometryAdvice(result);
       metrics.innerHTML = metricHtml([
         ["目标进水量", `${fmt(result.targetWater)} L/min`],
@@ -2440,7 +2466,7 @@
         ["混合强度", mixText, result.gasRatio > model.gasRatioWarn ? "warn" : "good"]
       ].map(([label, value, cls]) => statusCardHtml(label, value, cls, result)).join("");
       document.getElementById("manualStatusStrip").innerHTML = statusHtml;
-      document.getElementById("manualHeaderStatusDock").innerHTML = statusHtml;
+      setPageStatus("manual", statusHtml);
       const manualAdvice = geometryAdvice(result);
       document.getElementById("manualGeometryMetrics").innerHTML = metricHtml([
         ["入口段直径", `${fmtMm(result.inletMm)} mm`, "inletMm"],
@@ -2684,7 +2710,7 @@
       const maxVoid = result.summary.maxVoidNode;
       const outlet = result.summary.outletNode;
       const cavClass = minCav.cavitationMarginKpa < model.cavitationBadKpa ? "bad" : minCav.cavitationMarginKpa < model.cavitationWarnKpa ? "warn" : "good";
-      document.getElementById("deepStatusStrip").innerHTML = [
+      const deepStatusHtml = [
         ["最低压力", `${fmtPressure(minP.pressureAbsKpa, "abs")} · 节点${minP.index}`, minP.pressureAbsKpa < result.base.vaporKpa + model.cavitationWarnKpa ? "warn" : "good"],
         ["最低空化裕度", `${fmtPressure(minCav.cavitationMarginKpa, "delta")} · 节点${minCav.index}`, cavClass],
         ["最大含气率", `${fmt(maxVoid.voidFraction * 100)}% · 节点${maxVoid.index}`, maxVoid.voidFraction > model.gasRatioHigh ? "warn" : "good"],
@@ -2695,6 +2721,8 @@
           <div class="status-value">${value}</div>
         </div>
       `).join("");
+      document.getElementById("deepStatusStrip").innerHTML = deepStatusHtml;
+      setPageStatus("deep", deepStatusHtml);
       document.getElementById("deepProfileMetrics").innerHTML = metricHtml([
         ["总长度", `${fmt(result.profile.lengths.total)} mm`],
         ["节点数", `${result.options.nodeCount}`],
@@ -3538,7 +3566,7 @@ ${formulaMarkdown(pageFormulas.deep)}
       const isManual = page === "manual";
       const isDeep = page === "deep";
       const isMantra = page === "mantra";
-      document.body.classList.toggle("manual-status-active", isManual);
+      activePage = page;
       document.getElementById("simPage").classList.toggle("hidden", !isSim);
       document.getElementById("targetPage").classList.toggle("hidden", !isTarget);
       document.getElementById("manualPage").classList.toggle("hidden", !isManual);
@@ -3549,7 +3577,11 @@ ${formulaMarkdown(pageFormulas.deep)}
       document.getElementById("showManualPage").classList.toggle("active", isManual);
       document.getElementById("showDeepPage").classList.toggle("active", isDeep);
       document.getElementById("showMantraPage").classList.toggle("active", isMantra);
-      document.getElementById("manualHeaderStatusDock").classList.toggle("hidden", !isManual);
+      const activeStatusHtml = pageStatusHtml[page] || "";
+      const dock = document.getElementById("headerStatusDock");
+      dock.innerHTML = activeStatusHtml;
+      dock.classList.toggle("hidden", !activeStatusHtml);
+      document.body.classList.toggle("header-status-active", Boolean(activeStatusHtml));
       if (isTarget && targetSolution) drawTargetPipe(targetSolution);
       if (isManual) updateManual();
       if (isDeep) updateDeep();
