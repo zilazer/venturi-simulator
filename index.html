@@ -1448,6 +1448,7 @@
           <input id="profilePointCount" type="number" min="8" max="96" step="1" value="32">
         </label>
       </div>
+      <button class="secondary-button" id="fillProfileFromManual" type="button">从手动校核页导入入口参数</button>
       <button class="primary-button" id="runProfileCalc" type="button">生成入口曲线</button>
       <button class="secondary-button" id="downloadProfileStep" type="button">生成曲线文丘里 STP</button>
       <button class="secondary-button" id="copyProfileCoords" type="button">复制曲线坐标</button>
@@ -1779,6 +1780,7 @@
       "收缩段长度": "Contraction length",
       "曲线光顺指数": "Curve smoothness exponent",
       "生成点数": "Generated points",
+      "从手动校核页导入入口参数": "Import inlet values from Manual Check",
       "生成入口曲线": "Generate Inlet Curve",
       "复制曲线坐标": "Copy Curve Coordinates",
       "生成曲线文丘里 STP": "Generate Curved Venturi STP",
@@ -3290,6 +3292,22 @@
       drawProfileCanvas(result);
     }
 
+    function fillProfileFromManual() {
+      const manual = state.manualValues;
+      const contractionRad = manual.contractionDeg * Math.PI / 180;
+      const calculatedLength = (manual.inletMm - manual.throatMm) / Math.max(1e-6, 2 * Math.tan(contractionRad));
+      const values = {
+        profileInletMm: clamp(manual.inletMm, 1, 50),
+        profileThroatMm: clamp(manual.throatMm, 0.2, Math.max(0.21, Math.min(15, manual.inletMm - 0.01))),
+        profileLengthMm: clamp(calculatedLength, 1, 80),
+        profileFlowLpm: clamp(manual.waterFlowLpm, 0.05, 12)
+      };
+      Object.entries(values).forEach(([id, value]) => {
+        document.getElementById(id).value = inputDisplay(value);
+      });
+      updateProfile();
+    }
+
     function renderDeepResult(result) {
       const model = getModelConfig();
       const minP = result.summary.minPressureNode;
@@ -4513,6 +4531,7 @@ ${formulaMarkdown(pageFormulas.deep)}
       document.getElementById(id).addEventListener("change", () => updateProfile());
     });
     document.getElementById("runProfileCalc").addEventListener("click", () => updateProfile());
+    document.getElementById("fillProfileFromManual").addEventListener("click", () => fillProfileFromManual());
     document.getElementById("downloadProfileStep").addEventListener("click", () => downloadProfileStep());
     document.getElementById("copyProfileCoords").addEventListener("click", async () => {
       const text = document.getElementById("profileCoords").value;
