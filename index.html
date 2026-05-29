@@ -1449,6 +1449,7 @@
         </label>
       </div>
       <button class="primary-button" id="runProfileCalc" type="button">生成入口曲线</button>
+      <button class="secondary-button" id="downloadProfileStep" type="button">生成曲线文丘里 STP</button>
       <button class="secondary-button" id="copyProfileCoords" type="button">复制曲线坐标</button>
     </aside>
 
@@ -1780,6 +1781,7 @@
       "生成点数": "Generated points",
       "生成入口曲线": "Generate Inlet Curve",
       "复制曲线坐标": "Copy Curve Coordinates",
+      "生成曲线文丘里 STP": "Generate Curved Venturi STP",
       "锥形 vs 曲线效率对比": "Cone vs Curve Efficiency",
       "入口轮廓对比图": "Inlet Profile Comparison",
       "直锥入口": "Conical inlet",
@@ -3770,12 +3772,79 @@
       return { vertices, faces, lengths, outerR };
     }
 
+    function buildProfileVenturiMesh(profile) {
+      const seg = 40;
+      const vertices = [];
+      const faces = [];
+      const addVertex = (p) => {
+        vertices.push(p);
+        return vertices.length - 1;
+      };
+      const inletStraight = Math.max(4, profile.inletMm * 0.8);
+      const throatLen = Math.max(3, profile.throatMm * 3);
+      const diffuserLen = Math.max(profile.lengthMm * 1.5, (profile.inletMm - profile.throatMm) / (2 * Math.tan(6 * Math.PI / 180)));
+      const outletStraight = Math.max(4, profile.inletMm * 0.8);
+      const total = inletStraight + profile.lengthMm + throatLen + diffuserLen + outletStraight;
+      const x0 = -total / 2;
+      const stations = [];
+      stations.push([x0, profile.inletMm / 2]);
+      stations.push([x0 + inletStraight, profile.inletMm / 2]);
+      profile.points.slice(1).forEach((p) => {
+        stations.push([x0 + inletStraight + p.x, p.r]);
+      });
+      const throatStart = x0 + inletStraight + profile.lengthMm;
+      stations.push([throatStart + throatLen, profile.throatMm / 2]);
+      const diffuserSteps = 12;
+      for (let i = 1; i <= diffuserSteps; i++) {
+        const t = i / diffuserSteps;
+        stations.push([
+          throatStart + throatLen + diffuserLen * t,
+          profile.throatMm / 2 + (profile.inletMm / 2 - profile.throatMm / 2) * t
+        ]);
+      }
+      stations.push([x0 + total, profile.inletMm / 2]);
+      const outerR = Math.max(profile.inletMm / 2 + 2, profile.inletMm * 0.68 + 1.5);
+      const outer = [];
+      const inner = [];
+      for (const [x, innerR] of stations) {
+        const outerRing = [];
+        const innerRing = [];
+        for (let i = 0; i < seg; i++) {
+          const a = i / seg * Math.PI * 2;
+          const y = Math.cos(a);
+          const z = Math.sin(a);
+          outerRing.push(addVertex([x, outerR * y, outerR * z]));
+          innerRing.push(addVertex([x, innerR * y, innerR * z]));
+        }
+        outer.push(outerRing);
+        inner.push(innerRing);
+      }
+      for (let s = 0; s < stations.length - 1; s++) {
+        for (let i = 0; i < seg; i++) {
+          const j = (i + 1) % seg;
+          faces.push([outer[s][i], outer[s][j], outer[s + 1][j], outer[s + 1][i]]);
+          faces.push([inner[s][j], inner[s][i], inner[s + 1][i], inner[s + 1][j]]);
+        }
+      }
+      for (let i = 0; i < seg; i++) {
+        const j = (i + 1) % seg;
+        faces.push([outer[0][j], outer[0][i], inner[0][i], inner[0][j]]);
+        const last = stations.length - 1;
+        faces.push([outer[last][i], outer[last][j], inner[last][j], inner[last][i]]);
+      }
+      return {
+        vertices,
+        faces,
+        lengths: { inletStraight, contractionLen: profile.lengthMm, throatLen, diffuserLen, outletStraight, total },
+        outerR
+      };
+    }
+
     function stepString(value) {
       return String(value).replace(/'/g, "''");
     }
 
-    function createFacetedStep(result, label) {
-      const mesh = buildVenturiMesh(result);
+    function createFacetedStepFromMesh(mesh, label, comments) {
       let id = 1;
       const lines = [];
       const next = (text) => {
@@ -3819,11 +3888,6 @@
       const context = next(`GEOMETRIC_REPRESENTATION_CONTEXT(3)GLOBAL_UNCERTAINTY_ASSIGNED_CONTEXT((#${id + 1}))GLOBAL_UNIT_ASSIGNED_CONTEXT((#${unit}))REPRESENTATION_CONTEXT('','')`);
       const uncertainty = next(`UNCERTAINTY_MEASURE_WITH_UNIT(LENGTH_MEASURE(0.001),#${unit},'distance_accuracy_value','')`);
       lines.splice(lines.findIndex((line) => line.startsWith(`#${shape}=`)), 1, `#${shape}=SHAPE_REPRESENTATION('${stepString(label)}',(#${brep}),#${context});`);
-      const comments = [
-        `/* Venturi parameters: inlet=${fmtMm(result.inletMm)}mm throat=${fmtMm(result.throatMm)}mm outlet=${fmtMm(result.outletMm)}mm */`,
-        `/* contraction=${fmt(result.contractionDeg, 1)}deg diffuser=${fmt(result.diffuserDeg, 1)}deg air_port=${fmtMm(result.airPortMm)}mm air_axis_offset=${fmtMm(result.airPortOffsetMm)}mm */`,
-        `/* This STEP is a faceted engineering preview generated in-browser. */`
-      ].join("\n");
       return `ISO-10303-21;
 HEADER;
 FILE_DESCRIPTION(('Venturi faceted BREP generated by HTML tool'),'2;1');
@@ -3838,10 +3902,42 @@ END-ISO-10303-21;
 `;
     }
 
+    function createFacetedStep(result, label) {
+      const comments = [
+        `/* Venturi parameters: inlet=${fmtMm(result.inletMm)}mm throat=${fmtMm(result.throatMm)}mm outlet=${fmtMm(result.outletMm)}mm */`,
+        `/* contraction=${fmt(result.contractionDeg, 1)}deg diffuser=${fmt(result.diffuserDeg, 1)}deg air_port=${fmtMm(result.airPortMm)}mm air_axis_offset=${fmtMm(result.airPortOffsetMm)}mm */`,
+        `/* This STEP is a faceted engineering preview generated in-browser. */`
+      ].join("\n");
+      return createFacetedStepFromMesh(buildVenturiMesh(result), label, comments);
+    }
+
+    function createProfileFacetedStep(profile, label) {
+      const comments = [
+        `/* Curved inlet Venturi preview: inlet=${fmtMm(profile.inletMm)}mm throat=${fmtMm(profile.throatMm)}mm curve_length=${fmtMm(profile.lengthMm)}mm */`,
+        `/* curve_power=${fmt(profile.power, 2)} cone_K=${fmt(profile.coneK, 3)} curve_K=${fmt(profile.curveK, 3)} loss_reduction=${fmt(profile.lossReductionPct, 1)}pct */`,
+        `/* Axisymmetric faceted BREP. Radial air port is not included on this inlet-curve page export. */`
+      ].join("\n");
+      return createFacetedStepFromMesh(buildProfileVenturiMesh(profile), label, comments);
+    }
+
     function downloadStep(result, label) {
       if (!result) return;
       const fileBase = `${label}_${new Date().toISOString().slice(0, 19).replace(/[-:T]/g, '')}`;
       const blob = new Blob([createFacetedStep(result, fileBase)], { type: "model/step" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${fileBase}.stp`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function downloadProfileStep() {
+      const profile = evaluateInletProfile();
+      const fileBase = `venturi_curved_inlet_${new Date().toISOString().slice(0, 19).replace(/[-:T]/g, '')}`;
+      const blob = new Blob([createProfileFacetedStep(profile, fileBase)], { type: "model/step" });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
@@ -4417,6 +4513,7 @@ ${formulaMarkdown(pageFormulas.deep)}
       document.getElementById(id).addEventListener("change", () => updateProfile());
     });
     document.getElementById("runProfileCalc").addEventListener("click", () => updateProfile());
+    document.getElementById("downloadProfileStep").addEventListener("click", () => downloadProfileStep());
     document.getElementById("copyProfileCoords").addEventListener("click", async () => {
       const text = document.getElementById("profileCoords").value;
       try {
