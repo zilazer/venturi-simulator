@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <style>
+@page {
+    size: A4;
+    margin: 25mm 20mm 20mm 20mm;
+
+    @top-center {
+        content: "小流量吸气文丘里模块 vs 不吸气空化文丘里管  |  横纵分析法深度研究报告";
+        font-family: "Droid Sans Fallback", Helvetica, Arial, sans-serif;
+        font-size: 8pt;
+        color: #95a5a6;
+        border-bottom: 0.5pt solid #ecf0f1;
+        padding-bottom: 3mm;
+    }
+
+    @bottom-center {
+        content: "第 " counter(page) " 页";
+        font-family: "Droid Sans Fallback", Helvetica, Arial, sans-serif;
+        font-size: 8pt;
+        color: #95a5a6;
+        border-top: 0.8pt solid #1a5276;
+        padding-top: 2mm;
+    }
+}
+
+@page :first {
+    @top-center { content: none; }
+    @bottom-center { content: none; }
+}
+
+body {
+    font-family: "Droid Sans Fallback", Helvetica, Arial, sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.75;
+    color: #2c3e50;
+    text-align: justify;
+}
+
+/* 封面 */
+.cover {
+    page-break-after: always;
+    text-align: center;
+    padding-top: 45%;
+}
+.cover h1 {
+    font-size: 28pt;
+    color: #1a5276;
+    margin-bottom: 8mm;
+    font-weight: bold;
+    letter-spacing: 2pt;
+}
+.cover .subtitle {
+    font-size: 14pt;
+    color: #95a5a6;
+    margin-bottom: 6mm;
+}
+.cover .meta {
+    font-size: 11pt;
+    color: #95a5a6;
+    margin-bottom: 4mm;
+}
+.cover .divider {
+    width: 60%;
+    margin: 8mm auto;
+    border: none;
+    border-top: 1.5pt solid #1a5276;
+}
+
+/* 一级标题 */
+h1 {
+    font-size: 20pt;
+    color: #1a5276;
+    margin-top: 16mm;
+    margin-bottom: 6mm;
+    padding-bottom: 3mm;
+    border-bottom: 2pt solid #1a5276;
+    page-break-before: always;
+    font-weight: bold;
+}
+
+/* 二级标题 */
+h2 {
+    font-size: 14pt;
+    color: #1e8449;
+    margin-top: 10mm;
+    margin-bottom: 5mm;
+    font-weight: bold;
+}
+
+/* 三级标题 */
+h3 {
+    font-size: 12pt;
+    color: #2e86c1;
+    margin-top: 6mm;
+    margin-bottom: 3mm;
+    font-weight: bold;
+}
+
+h4 {
+    font-size: 11pt;
+    color: #5b2c6f;
+    margin-top: 5mm;
+    margin-bottom: 2mm;
+    font-weight: bold;
+}
+
+/* 段落 */
+p {
+    margin-top: 1.5mm;
+    margin-bottom: 1.5mm;
+    orphans: 3;
+    widows: 3;
+}
+
+/* 引用块 */
+blockquote {
+    margin: 4mm 0;
+    padding: 4mm 4mm 4mm 10mm;
+    background: #f8f9fa;
+    border-left: 3pt solid #1a5276;
+    color: #5d6d7e;
+    font-size: 10pt;
+}
+blockquote p {
+    margin: 1mm 0;
+}
+
+/* 粗体 */
+strong, b {
+    font-weight: bold;
+    color: #1a252f;
+}
+
+/* 行内代码 */
+code {
+    font-family: "Courier New", Courier, monospace;
+    background: #fdf2e9;
+    color: #c0392b;
+    padding: 0.5mm 1.5mm;
+    border-radius: 2pt;
+    font-size: 9.5pt;
+}
+
+/* 表格 */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 4mm 0;
+    font-size: 9.5pt;
+}
+thead th {
+    background: #1a5276;
+    color: white;
+    padding: 3mm;
+    text-align: left;
+    font-weight: bold;
+}
+tbody td {
+    padding: 2.5mm 3mm;
+    border-bottom: 0.5pt solid #bdc3c7;
+}
+tbody tr:nth-child(even) {
+    background: #f8f9fa;
+}
+
+/* 分隔线 */
+hr {
+    border: none;
+    border-top: 0.5pt solid #bdc3c7;
+    margin: 4mm 0;
+}
+
+/* 列表 */
+ul, ol {
+    margin: 2mm 0;
+    padding-left: 8mm;
+}
+li {
+    margin-bottom: 1mm;
+}
+
+/* 链接 */
+a {
+    color: #2e86c1;
+    text-decoration: none;
+}
+</style>
+</head>
+<body>
+
+    <div class="cover">
+        <h1 style="page-break-before: avoid; border: none;">小流量吸气文丘里模块 vs 不吸气空化文丘里管</h1>
+        <div class="subtitle">横纵分析法深度研究报告</div>
+        <div class='meta'>研究时间：2026-06-04 | 所属领域：文丘里 / 水力空化 / 气液两相清洗 | 研究对象类型：工程技术路线对比</div>
+        <hr class="divider">
+        <div class="meta">作者: Codex / 横纵分析法</div>
+    </div>
+    
+
+<blockquote>
+<p>研究时间：2026-06-04 | 所属领域：文丘里 / 水力空化 / 气液两相清洗 | 研究对象类型：工程技术路线对比</p>
+</blockquote>
+<h2>一、一句话定义</h2>
+<p>小流量吸气文丘里模块，是把空气主动吸进水流里，靠气泡、剪切、界面扰动和弱空化共同增强清洗；不吸气空化文丘里管，是让水本身在喉部低压区汽化成空泡，再在下游压力恢复时塌陷，靠更集中的水力空化冲击和自由基/剪切效应做处理。</p>
+<p>如果应用目标是“油烟机叶片上的新油污喷射清洗”，我的判断是：</p>
+<p><strong>第一版样机优先做小流量吸气文丘里模块；不吸气空化文丘里更适合作为第二阶段的高强度对照组，而不是第一版产品路线。</strong></p>
+<p>原因不复杂。油烟机叶片清洗需要的是温和、覆盖、稳定、可回收。纯空化文丘里需要更高压差和更严格的空化窗口，清洗力可能更强，但对叶片、涂层、塑料件、电机进水和噪声的风险也更高。吸气文丘里不一定最强，但更容易把清洗做成“可调、可看见、可控、可低压运行”的模块。</p>
+<h2>二、纵向分析：两条路线为什么会分开</h2>
+<h3>1. 文丘里最早解决的是“用流速换压力”</h3>
+<p>文丘里结构的底层逻辑很朴素：让水流通过缩口，速度升高，静压降低；下游扩散段再把一部分动压恢复成静压。</p>
+<p>这个结构天然会走出两条路。</p>
+<p>第一条路是吸入。既然喉部静压低，那就可以从侧孔吸入空气、药液、臭氧、肥料或其他流体。这就是吸气文丘里、文丘里射流器和各种曝气/混合模块的路线。</p>
+<p>第二条路是空化。既然喉部静压会降，如果降到接近液体蒸气压，水会局部汽化，形成空泡；这些空泡在下游压力恢复区塌陷，释放局部冲击、微射流、强剪切和自由基。这就是不吸气的水力空化文丘里路线。</p>
+<p>两条路线的几何相似，工程性格完全不同。</p>
+<p>吸气路线问的是：负压够不够稳定，气能不能吸进来，气泡能不能打碎，背压会不会倒灌。</p>
+<p>空化路线问的是：空化数够不够低，空泡能不能在合适位置生成和塌陷，强度够不够，材料会不会被打坏。</p>
+<h3>2. 吸气文丘里的演化：从混合器到微气泡发生器</h3>
+<p>吸气文丘里在农业灌溉、臭氧混合、水处理曝气和小型气液混合里很常见。它的优势是结构简单，没有运动件，靠水流自身产生负压。</p>
+<p>后来这条路线进入微气泡和微纳米气泡发生器。气体不再只是“混进去”，而是要被剪切、旋涡、喉部高速流和扩散段再破碎成更细的泡。微气泡清洗和水处理文献普遍强调小泡的价值：更大的比表面积、更慢的上升速度、更长的停留时间，以及更高的气液接触概率。</p>
+<p>对清洗来说，这条路线的核心不是暴力，而是界面。气泡贴近油污表面，扰动油水界面，辅助油滴脱附、卷起和携带。金属零件微气泡清洗研究显示，经过清洗槽和进气位置优化后，微气泡水能显著提升油污染金属件的去油效果。这个结果不能直接外推到喷射油烟机叶片，但它支撑一个方向：<strong>气泡对油膜脱附是有独立贡献的。</strong></p>
+<p>吸气文丘里的弱点也从这里来。它容易被“泡多”误导。气泡越多，水相动量越被稀释，射流越容易发散。气泡大到一定程度后，它们更像空气夹带，不再是有效清洗事件。对油烟机叶片，白泡很多不等于清洗强。</p>
+<h3>3. 不吸气空化文丘里的演化：从有害空蚀到可控处理</h3>
+<p>水力空化原本是设备损伤问题。泵、阀、叶轮、船用螺旋桨都怕空化。后来工程师反过来利用它，把它变成清洗、氧化、乳化、灭菌、污水处理、萃取和材料表面处理的工具。</p>
+<p>水力空化综述通常把文丘里、孔板、节流阀和旋转空化器列为主要发生器。其原理是在缩口处速度升高、压力降低，空泡生成；下游压力恢复后空泡塌陷。Processes 2020 的 controlled hydrodynamic cavitation 综述明确提到，水力空化系统通常包括供液槽、循环泵、压力表和空化腔，空化腔可以是孔板、文丘里或节流阀。它还给出空化数公式，用下游恢复压力、液体蒸气压、密度和喉部速度来评价空化发生条件。</p>
+<p>这条路线的强项是能量密度。它不需要外加空气，所有能量都留在水流和汽化/塌陷事件里。空泡塌陷更接近“硬清洗”：局部冲击、微射流、强剪切。Soyama 的空化射流综述也指出，空化射流塌陷产生的冲击可用于清洗、钻孔和空化喷丸。</p>
+<p>但这个优势很快变成风险。空化越强，越接近材料损伤。对厚金属、管道、工业零件，这是可控工艺；对油烟机叶片，尤其是薄铝片、塑料风轮、涂层件，就不能只看去污率。</p>
+<h3>4. 小流量场景让两条路线的差别被放大</h3>
+<p>你这个项目有一个很重要的约束：水量基本在 8 L/min 以下，进气量 1 L/min 以下，很多设计甚至要看 0.6 L/min；入口尺寸小，加工精度约 0.1 mm。</p>
+<p>小流量会放大所有不稳定。</p>
+<p>对吸气文丘里，小流量下负压窗口窄，进气孔太小会受加工误差和气路阻力影响，进气孔太大又容易气泡粗、射流散。背压稍高就可能吸不上气或倒灌。</p>
+<p>对不吸气空化文丘里，小流量下如果要达到足够低的空化数，往往要把喉径做得更小或把入口压力做高。这样会带来更高泵要求、更小加工公差、更高堵塞风险和更强噪声。微通道空化研究也说明，在小尺度 Venturi 中，流量、孔口尺寸、扩散角和压力恢复会强烈影响压降、速度分布和空化特征；空化数甚至会成为评价空化强度的关键指标。</p>
+<p>所以，在小流量油污清洗里，两条路线不是“谁更先进”的问题，而是谁更容易被做成稳定样机的问题。</p>
+<h2>三、横向分析：两条路线逐项对比</h2>
+<h3>1. 物理机理</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>小流量吸气文丘里模块</th>
+<th>不吸气空化文丘里管</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>泡来源</td>
+<td>外部空气被负压吸入</td>
+<td>水在低压区汽化形成蒸汽空泡</td>
+</tr>
+<tr>
+<td>主要作用</td>
+<td>气泡界面、剪切、混合、弱空化</td>
+<td>空泡塌陷、冲击、微射流、强剪切</td>
+</tr>
+<tr>
+<td>视觉表现</td>
+<td>白泡、水气混合明显</td>
+<td>未必有明显白泡，强度更多靠压力/噪声/空化数判断</td>
+</tr>
+<tr>
+<td>调节参数</td>
+<td>进气孔、气路阻力、喉径、背压、混合段</td>
+<td>入口压力、喉径、扩散段、空化数、温度</td>
+</tr>
+<tr>
+<td>对油膜作用</td>
+<td>更偏剥离、卷起、乳化、携带</td>
+<td>更偏冲击、破膜、局部剥离</td>
+</tr>
+</tbody>
+</table>
+<p>吸气文丘里对新油污更像“把油膜弄松，再带走”。不吸气空化文丘里更像“在局部把油膜打破”。</p>
+<p>新油污通常不是最需要暴力的对象。它需要降低黏度、破坏界面、持续冲刷和废液带走。这一点让吸气路线更贴近第一版目标。</p>
+<h3>2. 能耗与泵要求</h3>
+<p>吸气文丘里可以在较低压力下工作，只要喉部压力低于空气入口压力，就能产生吸气。它不要求喉部压力一定低到水蒸气压附近。</p>
+<p>不吸气空化文丘里必须把喉部局部压力压到空化条件附近。空化数常写作：</p>
+<pre><code class="language-text">Cv = (P_down - P_vapor) / (0.5 * rho * V_throat^2)
+</code></pre>
+<p>空化数越低，越容易形成空化。Processes 2020 综述提到，空化通常在特定阈值附近发生，几何和操作参数会影响空化产率，包括喉部面积、喉部形状、收缩/扩散角等。</p>
+<p>这意味着纯空化路线对泵更挑剔。若水量小，要靠更小喉径或更高入口压力来提高喉部速度。小喉径又带来堵塞、加工误差、压损和噪声。</p>
+<p>对家庭或小型清洗模块，低泵压和低噪声很重要。这里吸气文丘里更有工程余量。</p>
+<h3>3. 清洗效果</h3>
+<p>如果只看清洗强度上限，纯空化文丘里更强。</p>
+<p>它的空泡塌陷更集中，冲击更直接。如果目标是硬垢、矿物污垢、管壁附着物或工业污水氧化，纯空化路线更有说服力。</p>
+<p>但油烟机叶片的新油污不是硬垢。它是薄油膜和油雾冷凝物，真正要解决的是油膜从曲面上脱附、被水带走、不要重新挂回去。</p>
+<p>吸气文丘里在这个场景里的优势是：</p>
+<ul>
+<li>气泡增加油水界面扰动。</li>
+<li>气液混合让射流覆盖更柔和。</li>
+<li>可以配合温水和低剂量表面活性剂。</li>
+<li>视觉反馈强，用户容易知道模块在工作。</li>
+</ul>
+<p>纯空化文丘里的优势是：</p>
+<ul>
+<li>不引入外部空气，不会因进气导致射流动量明显下降。</li>
+<li>不存在进气倒灌问题。</li>
+<li>如果空化位置控制好，单位水量冲击更强。</li>
+</ul>
+<p>但它对“位置控制”的要求更高。空化最好不要在文丘里内壁上塌陷，也不要在喷头出口前全部消耗掉。对清洗来说，理想状态是空化结构在目标表面附近仍有有效扰动。这个要靠透明段、高速拍摄或至少靠实验间接验证，不能只靠感觉。</p>
+<h3>4. 风险</h3>
+<p>吸气文丘里的主要风险：</p>
+<ul>
+<li>背压高时吸不上气。</li>
+<li>进气孔倒灌。</li>
+<li>气太多导致射流发散。</li>
+<li>气泡太大，清洗贡献低。</li>
+<li>气路、止回阀和小孔加工误差影响稳定性。</li>
+</ul>
+<p>纯空化文丘里的主要风险：</p>
+<ul>
+<li>叶片或涂层空蚀。</li>
+<li>噪声和振动明显。</li>
+<li>泵压要求高。</li>
+<li>喉径小导致堵塞。</li>
+<li>空化区位置不稳定。</li>
+<li>能量在管内耗掉，喷到叶片时已经衰减。</li>
+</ul>
+<p>对油烟机叶片，纯空化路线最需要谨慎的是材料损伤。即使一次清洗没打穿，长期反复使用也可能让涂层变白、铝件粗糙、塑料件疲劳。吸气路线也会有风险，但更容易通过进气量、喷距和水温去缓和。</p>
+<h3>5. 可制造性</h3>
+<p>小流量吸气文丘里需要多一个径向进气口、气路、止回阀和调节结构。它的零件更多。</p>
+<p>纯空化文丘里结构更简单，理论上只有入口、收缩段、喉部、扩散段和出口。没有进气孔，密封更简单。</p>
+<p>但制造简单不等于调试简单。</p>
+<p>纯空化路线对喉径、扩散角、喉长和表面粗糙度更敏感。因为它要卡在空化窗口里。你加工精度 0.1 mm，如果喉径只有 1 mm 左右，0.1 mm 已经是 10% 量级，会显著改变流速和空化数。</p>
+<p>吸气文丘里也敏感，但它可以通过外部气路阀、进气孔径、止回阀、背压和喷头做后期调节。纯空化文丘里的后期调节余地相对少，更多要靠换件。</p>
+<h3>6. 与你现有网页模型的匹配度</h3>
+<p>你现在的仿真工具已经非常偏吸气文丘里：</p>
+<ul>
+<li>有目标进气量。</li>
+<li>有进气口等效直径。</li>
+<li>有进气口轴向位置。</li>
+<li>有高背压逆流判断。</li>
+<li>有气水比、含气率、出口流态动画。</li>
+</ul>
+<p>它也能评估空化风险，但还不是一个“纯空化文丘里优化器”。</p>
+<p>如果要把纯空化路线认真纳入，网页需要新增或强化几个指标：</p>
+<ul>
+<li>空化数 <code>Cv</code>。</li>
+<li>空化强度等级，而不是只做空化风险提示。</li>
+<li>空化区位置估算：喉部内、扩散段、出口附近。</li>
+<li>目标表面空化有效性估算。</li>
+<li>材料空蚀风险。</li>
+<li>不吸气模式下的出口喷射动量和压力恢复。</li>
+</ul>
+<p>这说明一个现实：你当前工具更适合先把吸气路线做扎实，再把纯空化作为对照页或模型模式扩展。</p>
+<h2>四、应用到油烟机叶片清洗：该选哪条</h2>
+<h3>1. 新油污：吸气文丘里优先</h3>
+<p>新油污还没有完全氧化固化，黏附强度低。它怕温水、怕表活、怕持续剪切，不一定需要强空化。</p>
+<p>所以对新油污，吸气文丘里的组合更合理：</p>
+<pre><code class="language-text">温水 + 低剂量表活 + 小流量吸气文丘里 + 扇形/斜向喷头 + 废液回收
+</code></pre>
+<p>这里文丘里的任务不是把油污“炸掉”，而是提高油水界面扰动，让油膜更容易被水流卷走。</p>
+<h3>2. 老油垢：纯空化也未必够</h3>
+<p>如果是老化厚油垢，纯空化听起来更强，但未必能解决根问题。</p>
+<p>老油垢往往需要热、碱、浸泡时间和机械刮擦。纯空化对局部硬污可能有效，但对厚油泥，它可能只打表层，还会把油污碎片冲到更难清理的地方。</p>
+<p>这意味着纯空化文丘里也不是“厚油垢终结者”。它更适合做增强清洗，而不是替代完整清洗流程。</p>
+<h3>3. 叶片安全：吸气路线更宽容</h3>
+<p>油烟机叶片的安全边界比去污率更重要。叶片变形、涂层损伤、动平衡破坏、电机进水，任何一个都足以让产品不可用。</p>
+<p>吸气路线可以从低强度开始逐步增强。纯空化路线一旦进入强空化区，局部损伤窗口会变窄。尤其小流量小喉径下，局部速度很高，空化位置和强度可能很难稳定。</p>
+<p>所以第一版产品化逻辑更偏吸气文丘里。</p>
+<h2>五、实验路线：怎么把两条路比清楚</h2>
+<h3>1. 必须同平台对比</h3>
+<p>不要拿一个吸气文丘里和另一个完全不同喷头的纯空化文丘里比较。那样结论会混在喷嘴、流量、压力、距离里。</p>
+<p>建议做同一测试平台：</p>
+<ul>
+<li>同一水泵。</li>
+<li>同一入口压力范围。</li>
+<li>同一喷头出口。</li>
+<li>同一喷射距离和角度。</li>
+<li>同一油污样片。</li>
+<li>同一水温和清洁剂浓度。</li>
+<li>只切换“进气开/关”和“喉部几何是否为空化优化”。</li>
+</ul>
+<h3>2. 四组对照</h3>
+<table>
+<thead>
+<tr>
+<th>组别</th>
+<th>结构</th>
+<th>目的</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A</td>
+<td>普通水喷射，无文丘里</td>
+<td>基线</td>
+</tr>
+<tr>
+<td>B</td>
+<td>吸气文丘里，低进气量</td>
+<td>看气泡增益</td>
+</tr>
+<tr>
+<td>C</td>
+<td>吸气文丘里，较高进气量</td>
+<td>看气太多是否削弱射流</td>
+</tr>
+<tr>
+<td>D</td>
+<td>不吸气空化文丘里</td>
+<td>看纯空化强度和损伤风险</td>
+</tr>
+</tbody>
+</table>
+<p>如果 D 去油强但表面损伤明显，它只能作为强清洗模式，不适合日常维护。</p>
+<p>如果 B 明显优于 A，且安全性好，吸气路线成立。</p>
+<p>如果 C 不如 B，就说明气泡不是越多越好。</p>
+<h3>3. 记录指标</h3>
+<p>至少记录：</p>
+<ul>
+<li>去油率：称重法或图像面积法。</li>
+<li>单位水量去油率。</li>
+<li>单位能耗去油率。</li>
+<li>喷射噪声。</li>
+<li>叶片/样片表面损伤。</li>
+<li>喷雾飞散范围。</li>
+<li>废液回收率。</li>
+<li>清洗后是否返油挂壁。</li>
+</ul>
+<p>纯空化组额外记录：</p>
+<ul>
+<li>入口压力。</li>
+<li>喉径。</li>
+<li>喉部速度。</li>
+<li>空化数。</li>
+<li>出口背压。</li>
+<li>喉部和扩散段是否出现异常噪声/振动。</li>
+</ul>
+<p>吸气组额外记录：</p>
+<ul>
+<li>进气量。</li>
+<li>气水比。</li>
+<li>进气是否稳定。</li>
+<li>是否倒灌。</li>
+<li>气泡视觉状态。</li>
+</ul>
+<h3>4. 推荐第一轮参数</h3>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th style="text-align: right;">吸气文丘里</th>
+<th style="text-align: right;">不吸气空化文丘里</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>水量</td>
+<td style="text-align: right;">0.6-2 L/min</td>
+<td style="text-align: right;">0.6-2 L/min</td>
+</tr>
+<tr>
+<td>入口压力</td>
+<td style="text-align: right;">150-500 kPa(g)</td>
+<td style="text-align: right;">300-900 kPa(g)</td>
+</tr>
+<tr>
+<td>进气量</td>
+<td style="text-align: right;">0.05-0.3 L/min</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>水温</td>
+<td style="text-align: right;">45-60 C</td>
+<td style="text-align: right;">45-60 C</td>
+</tr>
+<tr>
+<td>表活</td>
+<td style="text-align: right;">0-0.3%</td>
+<td style="text-align: right;">0-0.3%</td>
+</tr>
+<tr>
+<td>喷距</td>
+<td style="text-align: right;">10-40 mm</td>
+<td style="text-align: right;">20-50 mm</td>
+</tr>
+<tr>
+<td>入射角</td>
+<td style="text-align: right;">20-45 deg</td>
+<td style="text-align: right;">20-45 deg</td>
+</tr>
+</tbody>
+</table>
+<p>纯空化组先不要贴太近。距离太近时，局部空化冲击和水柱冲击叠加，容易把损伤误判成清洗能力。</p>
+<h2>六、横纵交汇洞察</h2>
+<h3>1. 吸气路线像“温和系统”，纯空化路线像“强工艺”</h3>
+<p>吸气文丘里更像一个系统模块：水、气、热、表活、喷头、回收一起工作。</p>
+<p>纯空化文丘里更像一个强工艺单元：它把压力能集中转成空化事件。做得好，强；做不好，伤。</p>
+<p>油烟机叶片新油污清洗更需要前者。因为目标不是实验室里证明空化很强，而是让用户能反复使用。</p>
+<h3>2. 纯空化不是不用气泡，而是不用“外加空气”</h3>
+<p>这点很容易混淆。</p>
+<p>不吸气空化文丘里并不是没有泡。它有水蒸气空泡，也可能受溶解气和微小固体核影响产生空化核。Processes 2020 综述提到，即使空化数高于常见阈值，溶解气和固体颗粒也可能促进空泡形成。</p>
+<p>所以两条路线的差别不是“有泡 vs 无泡”，而是“空气泡/气液混合”与“蒸汽空泡/水力空化”的差别。</p>
+<p>空气泡更稳定、更可见、更偏界面清洗。</p>
+<p>蒸汽空泡更短命、更激烈、更偏冲击清洗。</p>
+<h3>3. 对你当前项目，最好的路线是“双模式，不同目的”</h3>
+<p>不要把二者做成二选一。</p>
+<p>更合理的是：</p>
+<ul>
+<li><strong>日常维护模式</strong>：吸气文丘里，低气水比，温水，低剂量表活，低噪声，防飞溅。</li>
+<li><strong>强力对照/实验模式</strong>：关闭进气，使用纯空化喉部或更高压差，短时间测试去污上限和材料损伤。</li>
+</ul>
+<p>如果以后网页要扩展，可以增加一个“纯空化模式”页面或模型：</p>
+<ul>
+<li>输入水量、入口压力、背压、喉径、扩散角、水温。</li>
+<li>输出空化数、空化强度、材料风险、出口射流动量。</li>
+<li>不再输出进气量、气水比、逆流，而是输出空蚀风险和空化区位置。</li>
+</ul>
+<p>这样你的工具会从“气液混合文丘里初选”扩展成“清洗用文丘里发生器对比设计”。</p>
+<h2>七、结论</h2>
+<p>如果问题是“哪个更适合做油烟机叶片新油污清洗第一版”，答案是：</p>
+<p><strong>小流量吸气文丘里模块更适合先做。</strong></p>
+<p>它的清洗上限未必最高，但综合风险更低，调节余地更大，更容易和温水、低剂量表活、扇形喷头、废液回收组成完整产品逻辑。</p>
+<p>不吸气空化文丘里值得做，但建议作为第二条实验线：</p>
+<ul>
+<li>用来验证纯空化对去油率的提升上限。</li>
+<li>用来界定材料损伤边界。</li>
+<li>用来反推吸气文丘里是否已经足够。</li>
+</ul>
+<p>真正有价值的实验结论不是“空化更强”或“气泡更多”，而是：</p>
+<blockquote>
+<p>在同样水量、同样温度、同样喷距和同样时间下，哪一种路线能以更低损伤、更低废水、更低噪声，稳定去除新油污。</p>
+</blockquote>
+<p>对你的项目，我建议下一步把网页增加一个“纯空化对照模型”，并把实验台设计成进气可开关、喉部件可替换、喷头不变。这样二者可以在同一平台上公平比较。</p>
+<h2>八、信息来源</h2>
+<ul>
+<li>Soyama, Hitoshi. “Cavitating Jet: A Review.” Applied Sciences, 2020. DOAJ 摘要页：https://doaj.org/article/f968367b40d5425cbf051a1de9872ad4</li>
+<li>“Controlled Hydrodynamic Cavitation: A Review of Recent Advances and Perspectives for Greener Processing.” Processes, 2020. PDF：https://mdpi-res.com/d_attachment/processes/processes-08-00220/article_deploy/processes-08-00220.pdf</li>
+<li>“Hydrodynamic cavitation as a promising route for wastewater treatment: A review.” Chemical Engineering Journal, 2021. ScienceDirect 摘要页：https://www.sciencedirect.com/science/article/pii/S1385894721002837</li>
+<li>Apte, Dhruv, Mingming Ge, Olivier Coutier-Delgosha. “Numerical investigation of three-dimensional effects of cavitating flow in a venturi-type hydrodynamic cavitation reactor.” arXiv, 2024. https://arxiv.org/abs/2405.00831</li>
+<li>Gouin, Camille et al. “Numerical investigation of three-dimensional partial cavitation in a Venturi geometry.” arXiv, 2021. https://arxiv.org/abs/2105.14858</li>
+<li>Hossain, Md Naim et al. “Cavitation Dynamics in Venturi-Type Microchannels: Experimental Observations and Numerical Modeling.” arXiv, 2026. https://arxiv.org/abs/2601.17739</li>
+<li>“Design and experimental evaluation of a Venturi and Venturi-Vortex microbubble aeration system.” PMC 摘要页：https://pmc.ncbi.nlm.nih.gov/articles/PMC9557901/</li>
+<li>“Comparing cleaning effects of gas and vapor bubbles in ultrasonic fields.” PMC 摘要页：https://pmc.ncbi.nlm.nih.gov/articles/PMC8207306/</li>
+</ul>
+<h2>九、方法论说明</h2>
+<p>本文使用横纵分析法：纵向追踪文丘里从吸入混合器到微气泡模块、从有害空蚀到可控水力空化反应器的演化；横向比较两条路线在机理、泵压、清洗效果、风险、制造和实验验证上的差异；最后把结论落到油烟机叶片新油污喷射清洗的样机路线。</p>
+</body>
+</html>
