@@ -6,6 +6,14 @@
   <title>文丘里管水气混合工程初选</title>
   <link rel="icon" href="data:,">
   <style>
+    @font-face {
+      font-family: "PanaceaArchitectural";
+      src: url("assets/fonts/PanaceaArchitectural-Regular.ttf") format("truetype");
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+
     :root {
       color-scheme: light;
       --bg: #f7f5ee;
@@ -65,6 +73,50 @@
 
     .header-main {
       min-width: 0;
+    }
+
+    .brand-lockup {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .brand-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      min-height: 42px;
+      color: var(--ink);
+      text-decoration: none;
+      flex: 0 0 auto;
+    }
+
+    .brand-symbol {
+      width: 38px;
+      height: 38px;
+      border: 1.5px solid var(--ink);
+      border-radius: 6px;
+      display: grid;
+      place-items: center;
+      font-family: "PanaceaArchitectural", Inter, sans-serif;
+      font-size: 24px;
+      line-height: 1;
+      background: var(--panel);
+    }
+
+    .brand-wordmark {
+      font-family: "PanaceaArchitectural", Inter, sans-serif;
+      font-size: clamp(25px, 4.8vw, 47px);
+      line-height: 0.9;
+      letter-spacing: 0;
+      white-space: nowrap;
+    }
+
+    .title-stack {
+      min-width: 0;
+      padding-left: 14px;
+      border-left: 1px solid var(--line);
     }
 
     h1 {
@@ -920,6 +972,17 @@
         right: 16px;
       }
 
+      .brand-lockup {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .title-stack {
+        padding-left: 0;
+        border-left: 0;
+      }
+
       main {
         padding: 12px;
       }
@@ -964,7 +1027,15 @@
       </div>
     </div>
     <div class="header-main">
-      <h1>文丘里管水气混合工程初选</h1>
+      <div class="brand-lockup">
+        <div class="brand-logo" aria-label="VENTURI">
+          <span class="brand-symbol" aria-hidden="true">V</span>
+          <span class="brand-wordmark" aria-hidden="true">VENTURI</span>
+        </div>
+        <div class="title-stack">
+          <h1>文丘里管水气混合工程初选</h1>
+        </div>
+      </div>
       <p class="subtitle">用于小型水气混合方案的趋势计算与结构初选。模型基于伯努利、连续方程、局部损失和简化空气进气估算，不替代实验标定、CFD 或正式安全设计。</p>
       <nav class="page-tabs" aria-label="页面切换">
         <button id="showSimPage" class="active" type="button">仿真页</button>
